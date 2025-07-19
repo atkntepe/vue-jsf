@@ -1,11 +1,21 @@
-import { defineComponent, h, ref, markRaw, resolveComponent, computed } from "vue";
+import {
+  defineComponent,
+  h,
+  ref,
+  markRaw,
+  resolveComponent,
+  computed,
+  provide,
+} from "vue";
 import { useSchemaParser } from "./composables/useSchemaParser";
 import TextField from "./components/TextField.vue";
 import NumberField from "./components/NumberField.vue";
 import CheckboxField from "./components/CheckboxField.vue";
 import SelectField from "./components/SelectField.vue";
+import ArrayField from "./components/ArrayField.vue";
 import { useVuelidate } from "@vuelidate/core"; // New core import
-import { required } from "@vuelidate/validators"; // Built-in for requiredtype FieldRegistry = Record<string, any>;
+import { required, minLength, minValue, maxValue } from "@vuelidate/validators";
+
 type FieldRegistry = Record<string, any>;
 
 const defaultRegistry: FieldRegistry = {
@@ -13,6 +23,7 @@ const defaultRegistry: FieldRegistry = {
   numberfield: markRaw(NumberField),
   checkbox: markRaw(CheckboxField),
   select: markRaw(SelectField),
+  arrayfield: markRaw(ArrayField),
 };
 
 const predefinedRegistries: Record<string, FieldRegistry> = {
@@ -48,17 +59,6 @@ export const SchemaForm = defineComponent({
     const { fields } = useSchemaParser(props.schema);
     const formData = ref(props.modelValue);
 
-    const rules = computed(() => {
-      const validationRules: any = {};
-      fields.value.forEach((field) => {
-        const fieldRules: any = [...field.rules]; // Custom from schema
-        if (field.required) fieldRules.push(required); // Add built-in required
-        validationRules[field.path] = fieldRules;
-      });
-      return validationRules;
-    });
-    const v$ = useVuelidate(rules, formData, { $autoDirty: true });
-
     const fieldRegistry = ref<FieldRegistry>(defaultRegistry);
     if (typeof props.registry === "string") {
       fieldRegistry.value =
@@ -67,15 +67,69 @@ export const SchemaForm = defineComponent({
       fieldRegistry.value = { ...defaultRegistry, ...props.registry };
     }
 
+    provide('fieldRegistry', fieldRegistry.value);
+
+    const rules = computed(() => {
+      const validationRules: Record<string, any> = {};
+      fields.value.forEach((field) => {
+        const fieldRules = [];
+        if (field.required) fieldRules.push(required);
+
+        if (typeof field.minLength === "number") {
+          fieldRules.push(minLength(field.minLength));
+        }
+        if (typeof field.minimum === "number") {
+          fieldRules.push(minValue(field.minimum));
+        }
+        if (typeof field.maximum === "number") {
+          fieldRules.push(maxValue(field.maximum));
+        }
+        validationRules[field.path] = fieldRules;
+      });
+      return validationRules;
+    });
+    const v$ = useVuelidate(rules, formData, { $autoDirty: true });
+
     const updateField = (path: string, value: any) => {
       const keys = path.split(".");
       let current = formData.value;
       for (let i = 0; i < keys.length - 1; i++) {
         const key = keys[i];
-        if (!current[key]) current[key] = {};
-        current = current[key];
+        // Handle array indices
+        if (/^\d+$/.test(key)) {
+          const index = parseInt(key);
+          if (!Array.isArray(current)) current = [];
+          while (current.length <= index) {
+            current.push(undefined);
+          }
+          if ((current as any[])[index] === undefined) {
+            (current as any[])[index] = {};
+          }
+          current = (current as any[])[index];
+        } else {
+          if (!current[key]) {
+            // Check if next key is numeric (array index)
+            const nextKey = keys[i + 1];
+            if (nextKey && /^\d+$/.test(nextKey)) {
+              current[key] = [];
+            } else {
+              current[key] = {};
+            }
+          }
+          current = current[key];
+        }
       }
-      current[keys[keys.length - 1]] = value;
+      const lastKey = keys[keys.length - 1];
+      if (/^\d+$/.test(lastKey)) {
+        const index = parseInt(lastKey);
+        if (!Array.isArray(current)) current = [];
+        while (current.length <= index) {
+          current.push(undefined);
+        }
+        (current as any[])[index] = value;
+      } else {
+        current[lastKey] = value;
+      }
       emit("update:modelValue", formData.value);
     };
 
@@ -100,11 +154,20 @@ export const SchemaForm = defineComponent({
           ],
         );
       }
+      if (field.type === "arrayfield") {
+        const arrayValue = getNestedValue(formData.value, field.path, field.default || []);
+        return h(Component, {
+          field,
+          modelValue: Array.isArray(arrayValue) ? arrayValue : [],
+          "onUpdate:modelValue": (val: any) => updateField(field.path, val),
+          errors: v$.value[field.path]?.$errors || [],
+        });
+      }
       return h(Component, {
         field,
         modelValue: getNestedValue(formData.value, field.path, field.default),
         "onUpdate:modelValue": (val: any) => updateField(field.path, val),
-        errors: v$.value[field.path]?.$errors || [], // Pass errors array
+        errors: v$.value[field.path]?.$errors || [],
         ...(field.type === "numberfield" && Component === "VTextField"
           ? { type: "number" }
           : {}),
@@ -118,4 +181,3 @@ export const SchemaForm = defineComponent({
 
 export default SchemaForm;
 export { useSchemaParser };
-

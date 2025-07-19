@@ -14,6 +14,9 @@
       class="w-full p-2 bg-zinc-700 text-white rounded-md border border-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
       :placeholder="field.description"
     />
+    <div v-if="errors.length" class="text-red-300 text-sm mt-1">
+      {{ errors[0].$message }}
+    </div>
   </div>
 </template>
 
@@ -21,11 +24,11 @@
 import { computed } from "vue";
 import type { Field } from "../composables/useSchemaParser";
 
-const props = defineProps<{ field: Field; modelValue: any }>();
+const props = defineProps<{ field: Field; modelValue: any; errors: any[] }>();
 const emit = defineEmits(["update:modelValue"]);
 
 const localValue = computed({
   get: () => props.modelValue,
-  set: (val) => emit("update:modelValue", Number(val)), // Coerce to number
+  set: (val) => emit("update:modelValue", val === "" ? null : Number(val)),
 });
 </script>

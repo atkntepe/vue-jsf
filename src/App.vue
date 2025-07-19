@@ -30,10 +30,41 @@ const testSchema = {
   properties: {
     name: { type: "string", title: "Your Name", minLength: 3 },
     age: { type: "number", minimum: 18 },
+    skills: {
+      type: "array",
+      title: "Skills",
+      description: "List your skills",
+      items: { type: "string", title: "Skill" },
+      minItems: 1,
+      maxItems: 5
+    },
+    hobbies: {
+      type: "array",
+      title: "Hobbies",
+      items: { type: "string", title: "Hobby", maxLength: 20 }
+    },
+    contacts: {
+      type: "array",
+      title: "Emergency Contacts",
+      items: {
+        type: "object",
+        properties: {
+          name: { type: "string", title: "Contact Name" },
+          phone: { type: "string", title: "Phone Number" },
+          relationship: { 
+            type: "string", 
+            title: "Relationship",
+            enum: ["family", "friend", "colleague"]
+          }
+        },
+        required: ["name", "phone"]
+      },
+      minItems: 1,
+      maxItems: 3
+    }
   },
-  required: ["name"],
+  required: ["name", "age", "skills"],
 };
 
 const formData = ref({});
 </script>
-

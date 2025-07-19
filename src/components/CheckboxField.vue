@@ -10,6 +10,9 @@
       {{ field.label }}
       <span v-if="field.required" class="text-red-500">*</span>
     </label>
+    <div v-if="errors.length" class="text-red-300 text-sm mt-1">
+      {{ errors[0].$message }}
+    </div>
   </div>
 </template>
 
@@ -17,7 +20,7 @@
 import { computed } from "vue";
 import type { Field } from "../composables/useSchemaParser";
 
-const props = defineProps<{ field: Field; modelValue: any }>();
+const props = defineProps<{ field: Field; modelValue: any; errors: any[] }>();
 const emit = defineEmits(["update:modelValue"]);
 
 const localValue = computed({
