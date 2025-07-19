@@ -2,7 +2,9 @@
   "name": "vue-jsf",
   "description": "A lightweight Vue 3 JSON Schema Form Generator with Tailwind and Vuelidate support.",
   "private": false,
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.0.2",
   "type": "module",
   "keywords": [
@@ -19,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atkntepe/vue-jsf"  
+    "url": "https://github.com/atkntepe/vue-jsf"
   },
   "main": "dist/vue-jsf.umd.js",
   "module": "dist/vue-jsf.es.js",
@@ -30,19 +32,22 @@
       "require": "./dist/vue-jsf.umd.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "vue": "^3.5.0"
+    "vue": "^3.5.17"
   },
   "dependencies": {
     "@vue/compiler-sfc": "^3.5.17",
-    "ajv": "^8.17.1",
-    "vuelidate": "^0.7.7"
+    "@vuelidate/core": "^2.0.3",
+    "@vuelidate/validators": "^2.0.4",
+    "ajv": "^8.17.1"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.11",

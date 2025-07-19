@@ -33,7 +33,6 @@ export function useSchemaParser(schema: any) {
         return "numberfield";
       case "boolean":
         return "checkbox";
-
       default:
         return schemaType;
     }
@@ -45,10 +44,11 @@ export function useSchemaParser(schema: any) {
     return Object.entries(subSchema.properties).map(
       ([key, field]: [string, any]) => {
         const fullPath = [...path, key];
+        const baseType = mapType(field.type || "string");
         return {
           key,
           path: fullPath.join("."),
-          type: mapType(field.type || "string"),
+          type: field.enum ? "select" : baseType,
           label: field.title || key.charAt(0).toUpperCase() + key.slice(1),
           description: field.description || "",
           required: (subSchema.required || []).includes(key),
@@ -82,7 +82,7 @@ export function useSchemaParser(schema: any) {
       rules.push(
         (v: string) => new RegExp(field.pattern).test(v) || "Invalid format",
       );
-
+    // Expand as needed
     return rules;
   };
 

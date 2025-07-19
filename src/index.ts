@@ -1,13 +1,18 @@
-import { defineComponent, h, ref, markRaw, resolveComponent } from "vue";
+import { defineComponent, h, ref, markRaw, resolveComponent, computed } from "vue";
 import { useSchemaParser } from "./composables/useSchemaParser";
 import TextField from "./components/TextField.vue";
 import NumberField from "./components/NumberField.vue";
-
+import CheckboxField from "./components/CheckboxField.vue";
+import SelectField from "./components/SelectField.vue";
+import { useVuelidate } from "@vuelidate/core"; // New core import
+import { required } from "@vuelidate/validators"; // Built-in for requiredtype FieldRegistry = Record<string, any>;
 type FieldRegistry = Record<string, any>;
 
 const defaultRegistry: FieldRegistry = {
   textfield: markRaw(TextField),
   numberfield: markRaw(NumberField),
+  checkbox: markRaw(CheckboxField),
+  select: markRaw(SelectField),
 };
 
 const predefinedRegistries: Record<string, FieldRegistry> = {
@@ -42,6 +47,17 @@ export const SchemaForm = defineComponent({
   setup(props, { emit }) {
     const { fields } = useSchemaParser(props.schema);
     const formData = ref(props.modelValue);
+
+    const rules = computed(() => {
+      const validationRules: any = {};
+      fields.value.forEach((field) => {
+        const fieldRules: any = [...field.rules]; // Custom from schema
+        if (field.required) fieldRules.push(required); // Add built-in required
+        validationRules[field.path] = fieldRules;
+      });
+      return validationRules;
+    });
+    const v$ = useVuelidate(rules, formData, { $autoDirty: true });
 
     const fieldRegistry = ref<FieldRegistry>(defaultRegistry);
     if (typeof props.registry === "string") {
@@ -88,6 +104,7 @@ export const SchemaForm = defineComponent({
         field,
         modelValue: getNestedValue(formData.value, field.path, field.default),
         "onUpdate:modelValue": (val: any) => updateField(field.path, val),
+        errors: v$.value[field.path]?.$errors || [], // Pass errors array
         ...(field.type === "numberfield" && Component === "VTextField"
           ? { type: "number" }
           : {}),
