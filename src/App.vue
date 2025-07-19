@@ -100,7 +100,33 @@
               :schema="testSchema"
               v-model="formData"
               :registry="testRegistry"
-            />
+            >
+              <template #field-textfield="{ field, value, update, errors }">
+                <div class="space-y-2 mb-6">
+                  <label
+                    class="text-sm font-medium text-purple-600 dark:text-purple-400"
+                  >
+                    🎨 {{ field.label }} (Custom Styled)
+                    <span v-if="field.required" class="text-red-500 ml-1"
+                      >*</span
+                    >
+                  </label>
+                  <input
+                    :value="value"
+                    @input="update(($event.target as HTMLInputElement).value)"
+                    type="text"
+                    class="flex h-10 w-full rounded-md border-2 border-purple-300 dark:border-purple-700 bg-purple-50 dark:bg-purple-950/20 px-3 py-2 text-sm text-slate-900 dark:text-slate-50 placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    :placeholder="field.description"
+                  />
+                  <div
+                    v-if="errors.length"
+                    class="text-sm text-purple-600 dark:text-purple-400"
+                  >
+                    ⚠️ {{ errors[0].$message }}
+                  </div>
+                </div>
+              </template>
+            </SchemaForm>
           </div>
         </div>
       </div>
@@ -245,10 +271,12 @@ import { ref, markRaw, computed, onMounted } from "vue";
 import { SchemaForm } from "./index.ts";
 import TextField from "./components/TextField.vue";
 import NumberField from "./components/NumberField.vue";
+import SelectField from "./components/SelectField.vue";
 
 const testRegistry = {
   textfield: markRaw(TextField),
   numberfield: markRaw(NumberField),
+  select: markRaw(SelectField),
 };
 
 const testSchema = {
@@ -256,6 +284,12 @@ const testSchema = {
   properties: {
     name: { type: "string", title: "Your Name", minLength: 3 },
     age: { type: "number", minimum: 18 },
+    country: { 
+      type: "string", 
+      title: "Country", 
+      enum: ["United States", "Canada", "United Kingdom", "Germany", "France", "Australia", "Japan", "Other"],
+      description: "Select your country"
+    },
     skills: {
       type: "array",
       title: "Skills",
@@ -323,7 +357,6 @@ const updateDarkMode = () => {
 };
 
 onMounted(() => {
-  // Check for saved theme preference or default to system preference
   const savedTheme = localStorage.getItem("theme");
   const systemPreference = window.matchMedia(
     "(prefers-color-scheme: dark)",

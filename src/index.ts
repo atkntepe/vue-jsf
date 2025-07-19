@@ -54,8 +54,8 @@ export const SchemaForm = defineComponent({
     modelValue: { type: Object, default: () => ({}) },
     registry: { type: [Object, String], default: "default" },
   },
-  emits: ["update:modelValue"],
-  setup(props, { emit }) {
+  emits: ["update:modelValue", "submit"],
+  setup(props, { emit, slots }) {
     const { fields } = useSchemaParser(props.schema);
     const formData = ref(props.modelValue);
 
@@ -140,10 +140,31 @@ export const SchemaForm = defineComponent({
     };
 
     const renderField = (field: any) => {
+      // Check for field-specific slot first
+      const fieldSlotName = `field-${field.type}`;
+      if (slots[fieldSlotName]) {
+        const slotProps = {
+          field,
+          value: getNestedValue(formData.value, field.path, field.default),
+          update: (val: any) => updateField(field.path, val),
+          errors: v$.value[field.path]?.$errors || [],
+        };
+        
+        // For array fields, pass array-specific props
+        if (field.type === "arrayfield") {
+          const arrayValue = getNestedValue(formData.value, field.path, field.default || []);
+          slotProps.value = Array.isArray(arrayValue) ? arrayValue : [];
+        }
+        
+        return slots[fieldSlotName]!(slotProps);
+      }
+
+      // Fallback to default component rendering
       let Component = fieldRegistry.value[field.type] || "div";
       if (typeof Component === "string") {
         Component = resolveComponent(Component) || "div";
       }
+      
       if (field.children?.length) {
         return h(
           "fieldset",
@@ -154,6 +175,7 @@ export const SchemaForm = defineComponent({
           ],
         );
       }
+      
       if (field.type === "arrayfield") {
         const arrayValue = getNestedValue(formData.value, field.path, field.default || []);
         return h(Component, {
@@ -163,6 +185,7 @@ export const SchemaForm = defineComponent({
           errors: v$.value[field.path]?.$errors || [],
         });
       }
+      
       return h(Component, {
         field,
         modelValue: getNestedValue(formData.value, field.path, field.default),
@@ -174,8 +197,30 @@ export const SchemaForm = defineComponent({
       });
     };
 
-    return () =>
-      h("form", { class: "schema-form" }, fields.value.map(renderField));
+    const submitFn = () => {
+      // Validate form and emit submit event if valid
+      v$.value.$validate();
+      if (!v$.value.$invalid) {
+        emit("submit", formData.value);
+      }
+    };
+
+    return () => {
+      const formContent = fields.value.map(renderField);
+      
+      // Check for default slot that wraps the entire form
+      if (slots.default) {
+        return slots.default({
+          fields: fields.value,
+          formData: formData.value,
+          v$: v$.value,
+          submit: submitFn,
+        });
+      }
+      
+      // Default form rendering
+      return h("form", { class: "schema-form" }, formContent);
+    };
   },
 });
 

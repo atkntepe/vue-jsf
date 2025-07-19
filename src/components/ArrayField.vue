@@ -56,17 +56,26 @@
       </div>
     </div>
     
-    <button
-      @click="addItem"
-      :disabled="!canAdd"
-      class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-md transition-colors disabled:bg-slate-400 dark:disabled:bg-slate-600 disabled:cursor-not-allowed disabled:text-slate-300"
-      type="button"
+    <slot 
+      name="array-controls" 
+      :addFn="addItem" 
+      :removeFn="removeItem" 
+      :itemsLength="arrayValue.length"
+      :canAdd="canAdd"
+      :canRemove="canRemove"
     >
-      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-      </svg>
-      Add Item
-    </button>
+      <button
+        @click="addItem"
+        :disabled="!canAdd"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-md transition-colors disabled:bg-slate-400 dark:disabled:bg-slate-600 disabled:cursor-not-allowed disabled:text-slate-300"
+        type="button"
+      >
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Add Item
+      </button>
+    </slot>
     
     <div v-if="errors.length" class="space-y-1">
       <p v-for="error in errors" :key="error.$uid" class="text-sm text-red-500 dark:text-red-400">
