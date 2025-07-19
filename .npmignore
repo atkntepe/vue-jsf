@@ -21,3 +21,6 @@ Thumbs.db  # Windows cruft
 # Tests and examples (add if you expand)
 tests/
 examples/
+
+# Claude workspace files
+CLAUDE.md
