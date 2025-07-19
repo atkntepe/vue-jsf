@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "title": "User Profile",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "homeAddress": {
+      "$ref": "#/$defs/address"
+    },
+    "workAddress": {
+      "$ref": "#/$defs/address"
+    }
+  },
+  "$defs": {
+    "address": {
+      "type": "object",
+      "title": "Address",
+      "properties": {
+        "street": {
+          "type": "string",
+          "title": "Street"
+        },
+        "city": {
+          "type": "string",
+          "title": "City"
+        },
+        "zipCode": {
+          "type": "string",
+          "title": "ZIP Code"
+        }
+      }
+    }
+  }
+}

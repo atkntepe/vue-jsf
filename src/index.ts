@@ -178,8 +178,11 @@ export const SchemaForm = defineComponent({
         return slots[fieldSlotName]!(slotProps);
       }
 
-      let Component = fieldRegistry.value[field.type] || "div";
-      if (typeof Component === "string") {
+      let Component = fieldRegistry.value[field.type];
+      if (!Component) {
+        // Default to div element for unknown field types
+        Component = "div";
+      } else if (typeof Component === "string") {
         Component = resolveComponent(Component) || "div";
       }
 

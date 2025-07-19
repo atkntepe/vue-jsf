@@ -1,0 +1,48 @@
+{
+  "type": "object",
+  "title": "Complex Object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Name"
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "Age"
+    },
+    "address": {
+      "type": "object",
+      "title": "Address",
+      "properties": {
+        "street": {
+          "type": "string",
+          "title": "Street"
+        },
+        "city": {
+          "type": "string",
+          "title": "City"
+        },
+        "state": {
+          "type": "string",
+          "title": "State"
+        },
+        "postalCode": {
+          "type": "string",
+          "pattern": "\\d{5}",
+          "title": "ZIP Code"
+        }
+      },
+      "required": ["street", "city", "state", "postalCode"]
+    },
+    "hobbies": {
+      "type": "array",
+      "title": "Hobbies",
+      "items": {
+        "type": "string",
+        "title": "Hobby"
+      }
+    }
+  },
+  "required": ["name", "age"]
+}

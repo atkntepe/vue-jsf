@@ -24,14 +24,23 @@ export interface Field {
 }
 
 export function useSchemaParser(schema: any) {
-  const ajv = new Ajv({ allErrors: true });
+  const ajv = new Ajv({ 
+    allErrors: true,
+    validateSchema: false, // Disable meta-schema validation to avoid draft version conflicts
+    strict: false // Be more lenient with unknown keywords
+  });
   addFormats(ajv);
 
   ajv.addFormat("tel", /^[\+]?[1-9][\d]{0,15}$/);
 
   let validator: ((data: any) => boolean) | null = null;
   try {
-    validator = ajv.compile(schema);
+    // Create a clean copy of schema without meta-schema references for validation
+    const cleanSchema = { ...schema };
+    delete cleanSchema.$id;
+    delete cleanSchema.$schema;
+    
+    validator = ajv.compile(cleanSchema);
   } catch (error) {
     console.error("Invalid schema:", error);
   }

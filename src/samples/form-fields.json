@@ -1,0 +1,38 @@
+{
+  "type": "object",
+  "title": "Form Fields Demo",
+  "properties": {
+    "text": {
+      "type": "string",
+      "title": "Text Field"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email"
+    },
+    "password": {
+      "type": "string",
+      "format": "password",
+      "title": "Password"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "title": "Date"
+    },
+    "number": {
+      "type": "number",
+      "title": "Number"
+    },
+    "select": {
+      "type": "string",
+      "enum": ["option1", "option2", "option3"],
+      "title": "Select"
+    },
+    "checkbox": {
+      "type": "boolean",
+      "title": "Checkbox"
+    }
+  }
+}

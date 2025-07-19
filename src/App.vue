@@ -72,61 +72,115 @@
         </div>
 
         <div class="flex-1 overflow-y-auto p-6">
-          <div class="space-y-3 mb-6">
-            <div
-              class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
-            >
-              <div class="h-1.5 w-1.5 rounded-full bg-green-500"></div>
-              <span>Schema validation active</span>
+          <div class="space-y-4 mb-6">
+            <!-- Schema Input Section -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <label class="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  JSON Schema Input
+                </label>
+                <button
+                  @click="parseSchema"
+                  class="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1"
+                >
+                  Generate Form
+                </button>
+              </div>
+              <textarea
+                v-model="schemaInput"
+                placeholder="Paste your JSON schema here..."
+                class="w-full h-32 px-3 py-2 text-sm font-mono rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              ></textarea>
+              
+              <!-- Status indicators -->
+              <div class="flex items-center gap-4 text-xs">
+                <div
+                  class="flex items-center gap-2 text-slate-600 dark:text-slate-400"
+                >
+                  <div :class="schemaValid ? 'bg-green-500' : 'bg-red-500'" class="h-1.5 w-1.5 rounded-full"></div>
+                  <span>{{ schemaValid ? 'Valid schema' : 'Invalid schema' }}</span>
+                </div>
+                <div
+                  class="flex items-center gap-2 text-slate-600 dark:text-slate-400"
+                >
+                  <div class="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
+                  <span>Real-time parsing</span>
+                </div>
+                <div
+                  class="flex items-center gap-2 text-slate-600 dark:text-slate-400"
+                >
+                  <div class="h-1.5 w-1.5 rounded-full bg-purple-500"></div>
+                  <span>Auto-persist</span>
+                </div>
+              </div>
+
+              <!-- Error message -->
+              <div
+                v-if="schemaError"
+                class="p-3 rounded-md bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800"
+              >
+                <div class="flex items-start gap-2">
+                  <svg class="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <div>
+                    <p class="text-sm font-medium text-red-800 dark:text-red-200">Schema Error</p>
+                    <p class="text-sm text-red-600 dark:text-red-300 mt-1">{{ schemaError }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div
-              class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
-            >
-              <div class="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
-              <span>Real-time JSON output</span>
-            </div>
-            <div
-              class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
-            >
-              <div class="h-1.5 w-1.5 rounded-full bg-purple-500"></div>
-              <span>Interactive field validation</span>
+
+            <!-- Example Schemas -->
+            <div class="space-y-3">
+              <label class="text-sm font-medium text-slate-900 dark:text-slate-100">
+                Quick Examples
+              </label>
+              <div class="grid grid-cols-2 gap-2">
+                <button
+                  v-for="example in sampleSchemas"
+                  :key="example.name"
+                  @click="loadExample(example)"
+                  class="px-3 py-2 text-xs text-left bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md transition-colors border border-slate-200 dark:border-slate-700"
+                >
+                  <div class="font-medium text-slate-900 dark:text-slate-100">{{ example.name }}</div>
+                  <div class="text-slate-600 dark:text-slate-400 mt-1">{{ example.description }}</div>
+                </button>
+              </div>
             </div>
           </div>
 
+          <!-- Generated Form -->
           <div
+            v-if="currentSchema"
             class="rounded-lg border border-slate-200 dark:border-slate-800 p-4 bg-slate-50/50 dark:bg-slate-900/50"
           >
+            <div class="mb-4">
+              <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">Generated Form</h3>
+              <p class="text-xs text-slate-600 dark:text-slate-400">Interactive form based on your schema</p>
+            </div>
             <SchemaForm
-              :schema="testSchema"
+              :schema="currentSchema"
               v-model="formData"
               :registry="testRegistry"
-            >
-              <template #field-textfield="{ field, value, update, errors }">
-                <div class="space-y-2 mb-6">
-                  <label
-                    class="text-sm font-medium text-purple-600 dark:text-purple-400"
-                  >
-                    🎨 {{ field.label }} (Custom Styled)
-                    <span v-if="field.required" class="text-red-500 ml-1"
-                      >*</span
-                    >
-                  </label>
-                  <input
-                    :value="value"
-                    @input="update(($event.target as HTMLInputElement).value)"
-                    type="text"
-                    class="flex h-10 w-full rounded-md border-2 border-purple-300 dark:border-purple-700 bg-purple-50 dark:bg-purple-950/20 px-3 py-2 text-sm text-slate-900 dark:text-slate-50 placeholder:text-purple-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    :placeholder="field.description"
-                  />
-                  <div
-                    v-if="errors.length"
-                    class="text-sm text-purple-600 dark:text-purple-400"
-                  >
-                    ⚠️ {{ errors[0].$message }}
-                  </div>
-                </div>
-              </template>
-            </SchemaForm>
+              :key="schemaKey"
+            />
+          </div>
+
+          <!-- No schema state -->
+          <div
+            v-else
+            class="rounded-lg border border-slate-200 dark:border-slate-800 p-8 bg-slate-50/50 dark:bg-slate-900/50 text-center"
+          >
+            <svg class="h-12 w-12 mx-auto text-slate-400 dark:text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-2">
+              No valid schema
+            </h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+              Enter a valid JSON schema above to generate a form
+            </p>
           </div>
         </div>
       </div>
@@ -272,6 +326,7 @@ import { SchemaForm } from "./index.ts";
 import TextField from "./components/TextField.vue";
 import NumberField from "./components/NumberField.vue";
 import SelectField from "./components/SelectField.vue";
+import { sampleSchemas } from "./samples/index.js";
 
 const testRegistry = {
   textfield: markRaw(TextField),
@@ -391,9 +446,78 @@ const testSchema = {
 const formData = ref({});
 const isDarkMode = ref(false);
 
+// Schema input and parsing
+const schemaInput = ref('');
+const currentSchema = ref(null);
+const schemaValid = ref(false);
+const schemaError = ref('');
+const schemaKey = ref(0); // Force re-render when schema changes
+
 const formattedJson = computed(() => {
   return JSON.stringify(formData.value, null, 2);
 });
+
+// Parse schema with error handling and persistence
+const parseSchema = () => {
+  if (!schemaInput.value.trim()) {
+    currentSchema.value = null;
+    schemaValid.value = false;
+    schemaError.value = '';
+    formData.value = {};
+    return;
+  }
+
+  try {
+    const parsed = JSON.parse(schemaInput.value);
+    
+    // Basic schema validation
+    if (typeof parsed !== 'object' || parsed === null) {
+      throw new Error('Schema must be a valid JSON object');
+    }
+    
+    if (!parsed.type) {
+      throw new Error('Schema must have a "type" field');
+    }
+    
+    if (parsed.type === 'object' && !parsed.properties) {
+      throw new Error('Object schemas must have a "properties" field');
+    }
+
+    // Success - update state
+    currentSchema.value = parsed;
+    schemaValid.value = true;
+    schemaError.value = '';
+    formData.value = {}; // Reset form data for new schema
+    schemaKey.value++; // Force component re-render
+    
+    // Persist to localStorage
+    localStorage.setItem('vue-jsf-schema', schemaInput.value);
+    
+  } catch (error) {
+    // Keep last valid schema, show error
+    schemaValid.value = false;
+    schemaError.value = error instanceof Error ? error.message : 'Invalid JSON format';
+  }
+};
+
+// Load example schema
+const loadExample = (example: any) => {
+  schemaInput.value = JSON.stringify(example.schema, null, 2);
+  parseSchema();
+};
+
+// Load schema from localStorage on mount
+const loadPersistedSchema = () => {
+  const saved = localStorage.getItem('vue-jsf-schema');
+  if (saved) {
+    schemaInput.value = saved;
+    parseSchema();
+  } else {
+    // Use fallback schema for demo
+    schemaInput.value = JSON.stringify(testSchema, null, 2);
+    parseSchema();
+  }
+};
 
 const copyToClipboard = async () => {
   try {
@@ -419,6 +543,7 @@ const updateDarkMode = () => {
 };
 
 onMounted(() => {
+  // Load theme
   const savedTheme = localStorage.getItem("theme");
   const systemPreference = window.matchMedia(
     "(prefers-color-scheme: dark)",
@@ -429,5 +554,8 @@ onMounted(() => {
   }
 
   updateDarkMode();
+  
+  // Load persisted schema
+  loadPersistedSchema();
 });
 </script>

@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "title": "Person",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "title": "First Name"
+    },
+    "lastName": {
+      "type": "string",
+      "title": "Last Name"
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 0,
+      "title": "Age"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email"
+    }
+  },
+  "required": ["firstName", "lastName"]
+}
