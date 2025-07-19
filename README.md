@@ -1,5 +1,11 @@
-# Vue 3 + TypeScript + Vite
+# vue-jsf
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A lightweight Vue 3 library for generating dynamic forms from JSON Schemas. Built with Tailwind CSS for styling, Vuelidate for validation, and extensibility in mind via Composition API and slots.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Purpose
+This project aims to fill a gap in the Vue ecosystem: easy, schema-driven forms for API-heavy apps like admin panels or surveys. It parses JSON Schema Draft 7+ to auto-render fields with built-in validation, custom types, and Tailwind themes out of the box.
+
+## Status
+Currently in early development—core features are coming soon! Check back for updates, or contribute via issues/PRs.
+
+

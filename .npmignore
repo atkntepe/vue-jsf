@@ -1,0 +1,23 @@
+node_modules/
+
+# Dev configs and tools
+vite.config.ts
+tsconfig.json
+tailwind.config.js
+postcss.config.js  # If it exists, but v4 might not need it
+.eslintrc.*  # If you add linting later
+.prettierrc  # Same
+
+# Source code (since we're building to dist/)
+src/
+public/  # Vite's default, if unused
+
+# Misc dev files
+*.log
+*.tmp
+.DS_Store  # Mac cruft
+Thumbs.db  # Windows cruft
+
+# Tests and examples (add if you expand)
+tests/
+examples/
