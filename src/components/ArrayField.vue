@@ -1,27 +1,37 @@
 <template>
-  <div class="array-field">
-    <label class="block text-sm font-medium text-gray-200 mb-2">
-      {{ field.label }}
-      <span v-if="field.required" class="text-red-500">*</span>
-    </label>
-    <p v-if="field.description" class="text-sm text-gray-400 mb-3">
-      {{ field.description }}
-    </p>
+  <div class="space-y-4 mb-8">
+    <div class="space-y-1">
+      <label class="text-sm font-medium text-slate-900 dark:text-slate-100">
+        {{ field.label }}
+        <span v-if="field.required" class="text-red-500 ml-1">*</span>
+      </label>
+      <p v-if="field.description" class="text-sm text-slate-600 dark:text-slate-400">
+        {{ field.description }}
+      </p>
+    </div>
     
     <div class="space-y-3">
       <div 
         v-for="(item, index) in arrayValue" 
         :key="index"
-        class="border border-gray-600 rounded-lg p-3 bg-gray-800"
+        class="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 p-4"
       >
-        <div class="flex justify-between items-start mb-2">
-          <span class="text-sm text-gray-300">Item {{ index + 1 }}</span>
+        <div class="flex justify-between items-center mb-3">
+          <div class="flex items-center gap-2">
+            <div class="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
+            <span class="text-sm font-medium text-slate-900 dark:text-slate-100">
+              Item {{ index + 1 }}
+            </span>
+          </div>
           <button
             @click="removeItem(index)"
             :disabled="!canRemove"
-            class="text-red-500 hover:text-red-400 disabled:text-gray-500 disabled:cursor-not-allowed text-sm"
+            class="inline-flex items-center gap-1 px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-md transition-colors disabled:text-slate-400 dark:disabled:text-slate-600 disabled:cursor-not-allowed disabled:hover:bg-transparent"
             type="button"
           >
+            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
             Remove
           </button>
         </div>
@@ -49,14 +59,17 @@
     <button
       @click="addItem"
       :disabled="!canAdd"
-      class="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-sm"
+      class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-md transition-colors disabled:bg-slate-400 dark:disabled:bg-slate-600 disabled:cursor-not-allowed disabled:text-slate-300"
       type="button"
     >
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+      </svg>
       Add Item
     </button>
     
-    <div v-if="errors.length" class="mt-2">
-      <p v-for="error in errors" :key="error.$uid" class="text-red-500 text-sm">
+    <div v-if="errors.length" class="space-y-1">
+      <p v-for="error in errors" :key="error.$uid" class="text-sm text-red-500 dark:text-red-400">
         {{ error.$message }}
       </p>
     </div>
