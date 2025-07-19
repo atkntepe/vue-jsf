@@ -36,6 +36,69 @@ export function useSchemaParser(schema: any) {
     console.error("Invalid schema:", error);
   }
 
+  // $ref resolution with cycle detection
+  const resolveRef = (refPath: string, rootSchema: any, visited: Set<string> = new Set()): any => {
+    if (visited.has(refPath)) {
+      console.warn(`Circular reference detected: ${refPath}`);
+      return null;
+    }
+    
+    visited.add(refPath);
+    
+    // Handle local references starting with #/
+    if (refPath.startsWith('#/')) {
+      const path = refPath.substring(2).split('/');
+      let current = rootSchema;
+      
+      for (const segment of path) {
+        if (current && typeof current === 'object' && segment in current) {
+          current = current[segment];
+        } else {
+          console.warn(`Invalid reference path: ${refPath}`);
+          return null;
+        }
+      }
+      
+      // If the resolved schema also has a $ref, resolve it recursively
+      if (current && typeof current === 'object' && current.$ref) {
+        return resolveRef(current.$ref, rootSchema, visited);
+      }
+      
+      return current;
+    }
+    
+    console.warn(`External references not supported: ${refPath}`);
+    return null;
+  };
+
+  // Resolve all $ref in a schema object recursively
+  const resolveAllRefs = (obj: any, rootSchema: any, visited: Set<string> = new Set()): any => {
+    if (!obj || typeof obj !== 'object') {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map(item => resolveAllRefs(item, rootSchema, visited));
+    }
+
+    if (obj.$ref) {
+      const resolved = resolveRef(obj.$ref, rootSchema, new Set(visited));
+      if (resolved) {
+        // Merge other properties if they exist alongside $ref
+        const { $ref, ...otherProps } = obj;
+        const mergedSchema = { ...resolved, ...otherProps };
+        return resolveAllRefs(mergedSchema, rootSchema, visited);
+      }
+      return null;
+    }
+
+    const result: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      result[key] = resolveAllRefs(value, rootSchema, visited);
+    }
+    return result;
+  };
+
   const mapTypeWithFormat = (schemaType: string, format?: string) => {
     if (format === "enum") {
       return "select";
@@ -259,7 +322,10 @@ export function useSchemaParser(schema: any) {
     return rules;
   };
 
-  const fields = computed(() => parseFields(schema));
+  // Resolve all $refs in the schema before parsing
+  const resolvedSchema = resolveAllRefs(schema, schema);
+  
+  const fields = computed(() => parseFields(resolvedSchema));
 
   const validate = (data: any) => (validator ? validator(data) : false);
 
