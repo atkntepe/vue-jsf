@@ -13,6 +13,9 @@ import NumberField from "./components/NumberField.vue";
 import CheckboxField from "./components/CheckboxField.vue";
 import SelectField from "./components/SelectField.vue";
 import ArrayField from "./components/ArrayField.vue";
+import FormattedField from "./components/FormattedField.vue";
+import PasswordField from "./components/PasswordField.vue";
+import DateField from "./components/DateField.vue";
 import { useVuelidate } from "@vuelidate/core"; // New core import
 import { required, minLength, minValue, maxValue } from "@vuelidate/validators";
 
@@ -24,6 +27,13 @@ const defaultRegistry: FieldRegistry = {
   checkbox: markRaw(CheckboxField),
   select: markRaw(SelectField),
   arrayfield: markRaw(ArrayField),
+  formattedfield: markRaw(FormattedField),
+  passwordfield: markRaw(PasswordField),
+  datefield: markRaw(DateField),
+  datetimefield: markRaw(DateField),
+  timefield: markRaw(TextField),
+  uuidfield: markRaw(TextField),
+  colorfield: markRaw(TextField),
 };
 
 const predefinedRegistries: Record<string, FieldRegistry> = {
@@ -32,18 +42,27 @@ const predefinedRegistries: Record<string, FieldRegistry> = {
     numberfield: "InputNumber",
     checkbox: "Checkbox",
     select: "Select",
+    formattedfield: "InputText",
+    passwordfield: "Password",
+    datefield: "Calendar",
   },
   vuetify: {
     textfield: "VTextField",
     numberfield: "VTextField",
     checkbox: "VCheckbox",
     select: "VSelect",
+    formattedfield: "VTextField",
+    passwordfield: "VTextField",
+    datefield: "VDatePicker",
   },
   nuxtui: {
     textfield: "UInput",
     numberfield: "UInput",
     checkbox: "UCheckbox",
     select: "USelect",
+    formattedfield: "UInput",
+    passwordfield: "UInput",
+    datefield: "UInput",
   },
 };
 
@@ -67,7 +86,7 @@ export const SchemaForm = defineComponent({
       fieldRegistry.value = { ...defaultRegistry, ...props.registry };
     }
 
-    provide('fieldRegistry', fieldRegistry.value);
+    provide("fieldRegistry", fieldRegistry.value);
 
     const rules = computed(() => {
       const validationRules: Record<string, any> = {};
@@ -95,7 +114,6 @@ export const SchemaForm = defineComponent({
       let current = formData.value;
       for (let i = 0; i < keys.length - 1; i++) {
         const key = keys[i];
-        // Handle array indices
         if (/^\d+$/.test(key)) {
           const index = parseInt(key);
           if (!Array.isArray(current)) current = [];
@@ -108,7 +126,6 @@ export const SchemaForm = defineComponent({
           current = (current as any[])[index];
         } else {
           if (!current[key]) {
-            // Check if next key is numeric (array index)
             const nextKey = keys[i + 1];
             if (nextKey && /^\d+$/.test(nextKey)) {
               current[key] = [];
@@ -140,7 +157,6 @@ export const SchemaForm = defineComponent({
     };
 
     const renderField = (field: any) => {
-      // Check for field-specific slot first
       const fieldSlotName = `field-${field.type}`;
       if (slots[fieldSlotName]) {
         const slotProps = {
@@ -149,22 +165,24 @@ export const SchemaForm = defineComponent({
           update: (val: any) => updateField(field.path, val),
           errors: v$.value[field.path]?.$errors || [],
         };
-        
-        // For array fields, pass array-specific props
+
         if (field.type === "arrayfield") {
-          const arrayValue = getNestedValue(formData.value, field.path, field.default || []);
+          const arrayValue = getNestedValue(
+            formData.value,
+            field.path,
+            field.default || [],
+          );
           slotProps.value = Array.isArray(arrayValue) ? arrayValue : [];
         }
-        
+
         return slots[fieldSlotName]!(slotProps);
       }
 
-      // Fallback to default component rendering
       let Component = fieldRegistry.value[field.type] || "div";
       if (typeof Component === "string") {
         Component = resolveComponent(Component) || "div";
       }
-      
+
       if (field.children?.length) {
         return h(
           "fieldset",
@@ -175,9 +193,13 @@ export const SchemaForm = defineComponent({
           ],
         );
       }
-      
+
       if (field.type === "arrayfield") {
-        const arrayValue = getNestedValue(formData.value, field.path, field.default || []);
+        const arrayValue = getNestedValue(
+          formData.value,
+          field.path,
+          field.default || [],
+        );
         return h(Component, {
           field,
           modelValue: Array.isArray(arrayValue) ? arrayValue : [],
@@ -185,7 +207,7 @@ export const SchemaForm = defineComponent({
           errors: v$.value[field.path]?.$errors || [],
         });
       }
-      
+
       return h(Component, {
         field,
         modelValue: getNestedValue(formData.value, field.path, field.default),
@@ -198,7 +220,6 @@ export const SchemaForm = defineComponent({
     };
 
     const submitFn = () => {
-      // Validate form and emit submit event if valid
       v$.value.$validate();
       if (!v$.value.$invalid) {
         emit("submit", formData.value);
@@ -207,8 +228,7 @@ export const SchemaForm = defineComponent({
 
     return () => {
       const formContent = fields.value.map(renderField);
-      
-      // Check for default slot that wraps the entire form
+
       if (slots.default) {
         return slots.default({
           fields: fields.value,
@@ -217,8 +237,7 @@ export const SchemaForm = defineComponent({
           submit: submitFn,
         });
       }
-      
-      // Default form rendering
+
       return h("form", { class: "schema-form" }, formContent);
     };
   },

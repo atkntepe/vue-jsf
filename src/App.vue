@@ -283,13 +283,56 @@ const testSchema = {
   type: "object",
   properties: {
     name: { type: "string", title: "Your Name", minLength: 3 },
-    age: { type: "number", minimum: 18 },
-    country: { 
-      type: "string", 
-      title: "Country", 
-      enum: ["United States", "Canada", "United Kingdom", "Germany", "France", "Australia", "Japan", "Other"],
-      description: "Select your country"
+    age: { type: "number", title: "Age", minimum: 18 },
+
+    email: {
+      type: "string",
+      format: "email",
+      title: "Email Address",
+      description: "Your email address",
     },
+    password: {
+      type: "string",
+      format: "password",
+      title: "Password",
+      description: "Create a secure password",
+      minLength: 8,
+    },
+    birthdate: {
+      type: "string",
+      format: "date",
+      title: "Birth Date",
+      description: "Select your birth date",
+    },
+    website: {
+      type: "string",
+      format: "url",
+      title: "Personal Website",
+      description: "Your website or portfolio URL",
+    },
+    phone: {
+      type: "string",
+      format: "tel",
+      title: "Phone Number",
+      description: "Your contact phone number",
+    },
+
+    country: {
+      type: "string",
+      title: "Country",
+      enum: [
+        "United States",
+        "Canada",
+        "United Kingdom",
+        "Germany",
+        "France",
+        "Australia",
+        "Japan",
+        "Other",
+      ],
+      description: "Select your country",
+    },
+
     skills: {
       type: "array",
       title: "Skills",
@@ -298,11 +341,21 @@ const testSchema = {
       minItems: 1,
       maxItems: 5,
     },
-    hobbies: {
+
+    // Array with formatted items
+    socialLinks: {
       type: "array",
-      title: "Hobbies",
-      items: { type: "string", title: "Hobby", maxLength: 20 },
+      title: "Social Media Links",
+      description: "Add your social media profiles",
+      items: {
+        type: "string",
+        format: "url",
+        title: "Social Link",
+        description: "URL to your social media profile",
+      },
+      maxItems: 3,
     },
+
     contacts: {
       type: "array",
       title: "Emergency Contacts",
@@ -310,20 +363,29 @@ const testSchema = {
         type: "object",
         properties: {
           name: { type: "string", title: "Contact Name" },
-          phone: { type: "string", title: "Phone Number" },
+          email: {
+            type: "string",
+            format: "email",
+            title: "Email Address",
+          },
+          phone: {
+            type: "string",
+            format: "tel",
+            title: "Phone Number",
+          },
           relationship: {
             type: "string",
             title: "Relationship",
             enum: ["family", "friend", "colleague"],
           },
         },
-        required: ["name", "phone"],
+        required: ["name"],
       },
       minItems: 1,
       maxItems: 3,
     },
   },
-  required: ["name", "age", "skills"],
+  required: ["name", "age", "email", "password"],
 };
 
 const formData = ref({});
