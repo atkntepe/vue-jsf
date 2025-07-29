@@ -42,6 +42,13 @@
             >
               Documentation
             </router-link>
+            <router-link 
+              to="/ui-schema" 
+              class="text-sm font-medium transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+              :class="$route.name === 'ui-schema' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400'"
+            >
+              UI Schema
+            </router-link>
           </div>
 
           <!-- Dark Mode Toggle -->
@@ -119,6 +126,14 @@
             :class="$route.name === 'docs' ? 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'"
           >
             Documentation
+          </router-link>
+          <router-link 
+            to="/ui-schema" 
+            @click="showMobileMenu = false"
+            class="block px-3 py-2 text-sm font-medium rounded-md transition-colors"
+            :class="$route.name === 'ui-schema' ? 'bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'"
+          >
+            UI Schema
           </router-link>
         </div>
       </div>

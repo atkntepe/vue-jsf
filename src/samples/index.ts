@@ -7,6 +7,7 @@ import conditionalValidationSchema from './conditional-validation.json';
 import dependentValidationSchema from './dependent-validation.json';
 import schemaCompositionSchema from './schema-composition.json';
 import advancedPatternsSchema from './advanced-patterns.json';
+import fileUploadSchema from './file-upload.json';
 
 export interface SampleSchema {
   name: string;
@@ -54,6 +55,11 @@ export const sampleSchemas: SampleSchema[] = [
     name: "Advanced Patterns",
     description: "Mixed enums, regex patterns",
     schema: advancedPatternsSchema
+  },
+  {
+    name: "File Upload",
+    description: "File upload fields with validation",
+    schema: fileUploadSchema
   }
 ];
 
@@ -65,5 +71,6 @@ export {
   conditionalValidationSchema,
   dependentValidationSchema,
   schemaCompositionSchema,
-  advancedPatternsSchema
+  advancedPatternsSchema,
+  fileUploadSchema
 };

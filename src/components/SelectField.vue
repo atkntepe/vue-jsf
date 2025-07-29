@@ -123,9 +123,9 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from "vue";
-import type { Field } from "../composables/useSchemaParser";
+import type { FieldWithUI } from "../types";
 
-const props = defineProps<{ field: Field; modelValue: any; errors: any[] }>();
+const props = defineProps<{ field: FieldWithUI; modelValue: any; errors: any[] }>();
 const emit = defineEmits(["update:modelValue"]);
 
 const isOpen = ref(false);

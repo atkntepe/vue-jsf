@@ -8,6 +8,8 @@ import {
   provide,
 } from "vue";
 import { useSchemaParser } from "./composables/useSchemaParser";
+import { useUISchemaParser } from "./composables/useUISchemaParser";
+import type { UISchema } from "./types";
 import TextField from "./components/TextField.vue";
 import NumberField from "./components/NumberField.vue";
 import CheckboxField from "./components/CheckboxField.vue";
@@ -16,6 +18,7 @@ import ArrayField from "./components/ArrayField.vue";
 import FormattedField from "./components/FormattedField.vue";
 import PasswordField from "./components/PasswordField.vue";
 import DateField from "./components/DateField.vue";
+import FileUpload from "./components/FileUpload.vue";
 import { useVuelidate } from "@vuelidate/core"; // New core import
 import { required, minLength, minValue, maxValue } from "@vuelidate/validators";
 
@@ -34,6 +37,7 @@ const defaultRegistry: FieldRegistry = {
   timefield: markRaw(TextField),
   uuidfield: markRaw(TextField),
   colorfield: markRaw(TextField),
+  fileupload: markRaw(FileUpload),
 };
 
 const predefinedRegistries: Record<string, FieldRegistry> = {
@@ -70,6 +74,7 @@ export const SchemaForm = defineComponent({
   name: "SchemaForm",
   props: {
     schema: { type: Object, required: true },
+    uiSchema: { type: Object as () => UISchema, default: () => ({}) },
     modelValue: { type: Object, default: () => ({}) },
     registry: { type: [Object, String], default: "default" },
   },
@@ -80,8 +85,18 @@ export const SchemaForm = defineComponent({
     // Create reactive fields that update based on form data
     const fields = computed(() => {
       const parser = useSchemaParser(props.schema);
+      const uiParser = useUISchemaParser();
+      
       // Re-parse with current form data to apply conditional logic
-      return parser.parseFieldsWithData(formData.value);
+      const baseFields = parser.parseFieldsWithData(formData.value);
+      
+      // Process fields with UI schema to get enhanced fields
+      const enhancedFields = baseFields.map(field => 
+        uiParser.parseUISchema(field, props.uiSchema, [field.key])
+      );
+
+      // Process field order if specified in UI schema
+      return uiParser.processFieldOrder(enhancedFields, props.uiSchema['ui:order']);
     });
 
     const fieldRegistry = ref<FieldRegistry>(defaultRegistry);
@@ -184,7 +199,15 @@ export const SchemaForm = defineComponent({
         return slots[fieldSlotName]!(slotProps);
       }
 
-      let Component = fieldRegistry.value[field.type];
+      // Use widget-based component selection if UI schema widget is specified
+      const componentKey = field.widget ? field.widget : field.type;
+      let Component = fieldRegistry.value[componentKey];
+      
+      if (!Component) {
+        // Fallback to field type if widget not found
+        Component = fieldRegistry.value[field.type];
+      }
+      
       if (!Component) {
         // Default to div element for unknown field types
         Component = "div";
