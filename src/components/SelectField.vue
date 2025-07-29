@@ -73,7 +73,7 @@
             <div class="py-1">
               <div
                 v-for="(option, index) in field.enum"
-                :key="typeof option === 'object' ? option.value : option"
+                :key="getOptionKey(option, index)"
                 @click="selectOption(option)"
                 @mouseenter="highlightedIndex = index"
                 :class="[
@@ -84,16 +84,16 @@
                     'text-slate-900 dark:text-slate-50 hover:bg-slate-100 dark:hover:bg-slate-800':
                       highlightedIndex !== index,
                     'bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 font-medium':
-                      (typeof option === 'object' ? option.value : option) === localValue,
+                      getOptionValue(option) === localValue,
                   },
                 ]"
                 role="option"
-                :aria-selected="(typeof option === 'object' ? option.value : option) === localValue"
+                :aria-selected="getOptionValue(option) === localValue"
               >
-                <span class="block truncate">{{ typeof option === 'object' ? option.label : option }}</span>
+                <span class="block truncate">{{ getOptionLabel(option) }}</span>
 
                 <svg
-                  v-if="(typeof option === 'object' ? option.value : option) === localValue"
+                  v-if="getOptionValue(option) === localValue"
                   class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600 dark:text-blue-400"
                   fill="none"
                   stroke="currentColor"
@@ -137,19 +137,44 @@ const localValue = computed({
   set: (val) => emit("update:modelValue", val),
 });
 
+// Helper functions to safely handle null values and object/primitive options
+const getOptionValue = (option: any) => {
+  if (option === null || option === undefined) return option;
+  return typeof option === 'object' && option !== null ? option.value : option;
+};
+
+const getOptionLabel = (option: any) => {
+  if (option === null) return 'null';
+  if (option === undefined) return 'undefined';
+  if (typeof option === 'object' && option !== null && option.label) {
+    return option.label;
+  }
+  return String(option);
+};
+
+const getOptionKey = (option: any, index: number) => {
+  if (option === null) return `null-${index}`;
+  if (option === undefined) return `undefined-${index}`;
+  if (typeof option === 'object' && option !== null) {
+    return `${option.value}-${index}`;
+  }
+  return `${option}-${index}`;
+};
+
 const displayValue = computed(() => {
-  if (!localValue.value) return "";
+  if (localValue.value === null) return 'null';
+  if (localValue.value === undefined || localValue.value === '') return '';
   
   // Handle object enum format {value, label}
   const option = props.field.enum?.find((opt: any) => 
-    typeof opt === 'object' ? opt.value === localValue.value : opt === localValue.value
+    getOptionValue(opt) === localValue.value
   );
   
-  if (typeof option === 'object' && option.label) {
-    return option.label;
+  if (option) {
+    return getOptionLabel(option);
   }
   
-  return localValue.value || "";
+  return String(localValue.value);
 });
 
 const toggleDropdown = () => {
@@ -157,7 +182,7 @@ const toggleDropdown = () => {
   if (isOpen.value) {
     // Find current option index, handling both string and object enum formats
     const currentIndex = props.field.enum?.findIndex((opt: any) => 
-      typeof opt === 'object' ? opt.value === localValue.value : opt === localValue.value
+      getOptionValue(opt) === localValue.value
     ) ?? -1;
     highlightedIndex.value = currentIndex;
   }
@@ -165,7 +190,7 @@ const toggleDropdown = () => {
 
 const selectOption = (option: any) => {
   // Handle object enum format {value, label}
-  const value = typeof option === 'object' ? option.value : option;
+  const value = getOptionValue(option);
   localValue.value = value;
   isOpen.value = false;
   highlightedIndex.value = -1;

@@ -12,19 +12,19 @@
     
     <div class="space-y-3">
       <div 
-        v-for="(item, index) in arrayValue" 
-        :key="index"
+        v-for="item in arrayItems" 
+        :key="item.id"
         class="rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 p-4"
       >
         <div class="flex justify-between items-center mb-3">
           <div class="flex items-center gap-2">
             <div class="h-1.5 w-1.5 rounded-full bg-blue-500"></div>
             <span class="text-sm font-medium text-slate-900 dark:text-slate-100">
-              Item {{ index + 1 }}
+              Item {{ item.index + 1 }}
             </span>
           </div>
           <button
-            @click="removeItem(index)"
+            @click="removeItem(item.index)"
             :disabled="!canRemove"
             class="inline-flex items-center gap-1 px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-md transition-colors disabled:text-slate-400 dark:disabled:text-slate-600 disabled:cursor-not-allowed disabled:hover:bg-transparent"
             type="button"
@@ -39,18 +39,23 @@
         <div v-if="isSimpleArray && field.items && field.items[0]">
           <component
             :is="getFieldComponent(field.items[0].type)"
-            :field="{ ...field.items[0], path: `${field.path}.${index}` }"
-            :modelValue="item"
-            @update:modelValue="updateItem(index, $event)"
-            :errors="getItemErrors(index)"
+            :field="{ 
+              ...field.items[0], 
+              path: `${field.path}.${item.index}`,
+              key: `${field.path}.${item.index}`,
+              label: `Item ${item.index + 1}`
+            }"
+            :modelValue="item.value"
+            @update:modelValue="updateItem(item.index, $event)"
+            :errors="getItemErrors(item.index)"
           />
         </div>
         
         <div v-else-if="isObjectArray">
           <SchemaForm
             :schema="getObjectSchema()"
-            :modelValue="item || {}"
-            @update:modelValue="updateItem(index, $event)"
+            :modelValue="item.value || {}"
+            @update:modelValue="updateItem(item.index, $event)"
           />
         </div>
       </div>
@@ -60,7 +65,7 @@
       name="array-controls" 
       :addFn="addItem" 
       :removeFn="removeItem" 
-      :itemsLength="arrayValue.length"
+      :itemsLength="arrayItems.length"
       :canAdd="canAdd"
       :canRemove="canRemove"
     >
@@ -86,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject } from 'vue';
+import { computed, inject, ref } from 'vue';
 import type { Field } from '../composables/useSchemaParser';
 import { SchemaForm } from '../index';
 
@@ -95,6 +100,7 @@ interface Props {
   modelValue: any[];
   errors?: any[];
 }
+
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: () => [],
@@ -107,22 +113,42 @@ const emit = defineEmits<{
 
 const fieldRegistry = inject<Record<string, any>>('fieldRegistry', {});
 
-const arrayValue = computed(() => {
-  return Array.isArray(props.modelValue) ? props.modelValue : [];
+let idCounter = 0;
+// Store IDs by array index, not by value
+const itemIds = ref<string[]>([]);
+
+const arrayItems = computed(() => {
+  const values = Array.isArray(props.modelValue) ? props.modelValue : [];
+  
+  // Ensure we have IDs for all items
+  while (itemIds.value.length < values.length) {
+    itemIds.value.push(`item-${idCounter++}`);
+  }
+  
+  // Remove extra IDs if array shrunk
+  if (itemIds.value.length > values.length) {
+    itemIds.value = itemIds.value.slice(0, values.length);
+  }
+  
+  return values.map((value, index) => ({
+    id: itemIds.value[index],
+    value,
+    index
+  }));
 });
 
 const canAdd = computed(() => {
   if (typeof props.field.maxItems === 'number') {
-    return arrayValue.value.length < props.field.maxItems;
+    return arrayItems.value.length < props.field.maxItems;
   }
   return true;
 });
 
 const canRemove = computed(() => {
   if (typeof props.field.minItems === 'number') {
-    return arrayValue.value.length > props.field.minItems;
+    return arrayItems.value.length > props.field.minItems;
   }
-  return arrayValue.value.length > 0;
+  return arrayItems.value.length > 0;
 });
 
 const isSimpleArray = computed(() => {
@@ -179,19 +205,24 @@ const addItem = () => {
   if (!canAdd.value) return;
   
   const newItem = getDefaultItem();
-  const newArray = [...arrayValue.value, newItem];
+  const currentValues = Array.isArray(props.modelValue) ? props.modelValue : [];
+  const newArray = [...currentValues, newItem];
   emit('update:modelValue', newArray);
 };
 
 const removeItem = (index: number) => {
   if (!canRemove.value) return;
   
-  const newArray = arrayValue.value.filter((_, i) => i !== index);
+  const currentValues = Array.isArray(props.modelValue) ? props.modelValue : [];
+  const newArray = currentValues.filter((_, i) => i !== index);
+  // Also remove the corresponding ID
+  itemIds.value.splice(index, 1);
   emit('update:modelValue', newArray);
 };
 
 const updateItem = (index: number, value: any) => {
-  const newArray = [...arrayValue.value];
+  const currentValues = Array.isArray(props.modelValue) ? props.modelValue : [];
+  const newArray = [...currentValues];
   newArray[index] = value;
   emit('update:modelValue', newArray);
 };

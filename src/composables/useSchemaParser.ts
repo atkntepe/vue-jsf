@@ -348,7 +348,7 @@ export function useSchemaParser(schema: any) {
                 : [
                     {
                       key: "item",
-                      path: [...fullPath, "0"].join("."),
+                      path: fullPath.join("."),
                       type: field.items.enum
                         ? "select"
                         : field.items.pattern && getInputMask(field.items.pattern)
