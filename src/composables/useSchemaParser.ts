@@ -321,13 +321,35 @@ export function useSchemaParser(schema: any) {
           return baseField;
         }
         
-        const fieldType = field.enum
-          ? "select"
-          : field.const !== undefined
-          ? "readonly"
-          : field.pattern && getInputMask(field.pattern)
-          ? "formattedfield"
-          : mapTypeWithFormat(field.type || "string", field.format);
+        // Determine field type with focused debugging for skills field
+        let fieldType;
+        if (field.type === "array" && field.items?.enum) {
+          fieldType = "multiselect";
+          if (key === "skills" || key === "interests") {
+            console.log(`🎯 MULTISELECT DETECTED - ${key}:`, { 
+              type: field.type, 
+              hasItems: !!field.items, 
+              hasEnum: !!field.items?.enum,
+              enumOptions: field.items.enum,
+              resultType: fieldType
+            });
+          }
+        } else if (field.enum) {
+          fieldType = "select";
+          if (key === "skills" || key === "interests") {
+            console.log(`📋 SELECT DETECTED - ${key}:`, { 
+              type: field.type, 
+              enum: field.enum,
+              resultType: fieldType
+            });
+          }
+        } else if (field.const !== undefined) {
+          fieldType = "readonly";
+        } else if (field.pattern && getInputMask(field.pattern)) {
+          fieldType = "formattedfield";
+        } else {
+          fieldType = mapTypeWithFormat(field.type || "string", field.format);
+        }
         const baseField: Field = {
           key,
           path: fullPath.join("."),
@@ -336,7 +358,7 @@ export function useSchemaParser(schema: any) {
           label: field.title || key.charAt(0).toUpperCase() + key.slice(1),
           description: field.description || "",
           required: (processedSchema.required || []).includes(key),
-          enum: field.enum || null,
+          enum: field.enum || (field.type === "array" && field.items?.enum ? field.items.enum : null),
           default: field.default,
           rules: getRules(field),
           minLength: field.minLength,

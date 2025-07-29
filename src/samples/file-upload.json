@@ -48,7 +48,60 @@
       },
       "maxItems": 5,
       "maxSize": 20971520
+    },
+    "skills": {
+      "type": "array",
+      "title": "Skills",
+      "description": "Select your technical skills",
+      "items": {
+        "type": "string",
+        "enum": [
+          "JavaScript",
+          "TypeScript", 
+          "Vue.js",
+          "React",
+          "Angular",
+          "Node.js",
+          "Python",
+          "Java",
+          "C#",
+          "PHP",
+          "HTML/CSS",
+          "SQL",
+          "MongoDB",
+          "PostgreSQL",
+          "AWS",
+          "Docker",
+          "Kubernetes",
+          "Git"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 8
+    },
+    "interests": {
+      "type": "array", 
+      "title": "Areas of Interest",
+      "description": "Select areas you're interested in",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Frontend Development",
+          "Backend Development",
+          "Full Stack Development",
+          "Mobile Development",
+          "DevOps",
+          "Data Science",
+          "Machine Learning",
+          "UI/UX Design",
+          "Project Management",
+          "Quality Assurance",
+          "Cybersecurity",
+          "Cloud Computing"
+        ]
+      },
+      "maxItems": 5
     }
   },
-  "required": ["name", "resume"]
+  "required": ["name", "resume", "skills"]
 }

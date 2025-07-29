@@ -88,10 +88,46 @@ export function useUISchemaParser() {
         uiSchema?.['ui:widget'] === 'radio'
     },
     {
+      name: 'multiselect',
+      component: 'MultiSelect',
+      test: (schema: any, uiSchema?: UISchema) => {
+        const isMultiselect = (schema.type === 'array' && schema.items?.enum && !uiSchema?.['ui:widget']) || 
+                             uiSchema?.['ui:widget'] === 'multiselect';
+        
+        if ((schema.key === 'skills' || schema.key === 'interests') || (schema.path && (schema.path.includes('skills') || schema.path.includes('interests')))) {
+          console.log(`🧪 MULTISELECT WIDGET TEST - ${schema.key || schema.path}:`, {
+            type: schema.type,
+            hasItems: !!schema.items,
+            hasItemsEnum: !!schema.items?.enum,
+            hasEnum: !!schema.enum,
+            uiWidget: uiSchema?.['ui:widget'],
+            testResult: isMultiselect,
+            schema: schema
+          });
+        }
+        
+        return isMultiselect;
+      }
+    },
+    {
       name: 'select',
       component: 'SelectField',
-      test: (schema: any, uiSchema?: UISchema) => 
-        (schema.enum && !uiSchema?.['ui:widget']) || uiSchema?.['ui:widget'] === 'select'
+      test: (schema: any, uiSchema?: UISchema) => {
+        const isSelect = (schema.enum && schema.type !== 'array' && !uiSchema?.['ui:widget']) || 
+                        uiSchema?.['ui:widget'] === 'select';
+        
+        if ((schema.key === 'skills' || schema.key === 'interests') || (schema.path && (schema.path.includes('skills') || schema.path.includes('interests')))) {
+          console.log(`📋 SELECT WIDGET TEST - ${schema.key || schema.path}:`, {
+            type: schema.type,
+            hasEnum: !!schema.enum,
+            uiWidget: uiSchema?.['ui:widget'],
+            testResult: isSelect,
+            schema: schema
+          });
+        }
+        
+        return isSelect;
+      }
     },
     {
       name: 'checkboxes',

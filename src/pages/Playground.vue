@@ -237,6 +237,7 @@ import TextField from "../components/TextField.vue";
 import NumberField from "../components/NumberField.vue";
 import SelectField from "../components/SelectField.vue";
 import FileUpload from "../components/FileUpload.vue";
+import MultiSelect from "../components/MultiSelect.vue";
 import { sampleSchemas } from "../samples/index.js";
 
 const testRegistry = {
@@ -244,6 +245,7 @@ const testRegistry = {
   numberfield: markRaw(NumberField),
   select: markRaw(SelectField),
   fileupload: markRaw(FileUpload),
+  multiselect: markRaw(MultiSelect),
 };
 
 const testSchema = {

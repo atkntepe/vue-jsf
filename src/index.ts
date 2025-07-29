@@ -19,6 +19,7 @@ import FormattedField from "./components/FormattedField.vue";
 import PasswordField from "./components/PasswordField.vue";
 import DateField from "./components/DateField.vue";
 import FileUpload from "./components/FileUpload.vue";
+import MultiSelect from "./components/MultiSelect.vue";
 import { useVuelidate } from "@vuelidate/core"; // New core import
 import { required, minLength, minValue, maxValue } from "@vuelidate/validators";
 
@@ -38,6 +39,7 @@ const defaultRegistry: FieldRegistry = {
   uuidfield: markRaw(TextField),
   colorfield: markRaw(TextField),
   fileupload: markRaw(FileUpload),
+  multiselect: markRaw(MultiSelect),
 };
 
 const predefinedRegistries: Record<string, FieldRegistry> = {
@@ -200,12 +202,32 @@ export const SchemaForm = defineComponent({
       }
 
       // Use widget-based component selection if UI schema widget is specified
-      const componentKey = field.widget ? field.widget : field.type;
+      // OVERRIDE: Force multiselect for array enum fields
+      let componentKey;
+      if (field.type === 'multiselect') {
+        componentKey = 'multiselect'; // Force multiselect component
+      } else {
+        componentKey = field.widget ? field.widget : field.type;
+      }
       let Component = fieldRegistry.value[componentKey];
+      
+      if (field.key === "skills" || field.key === "interests") {
+        console.log(`🎨 COMPONENT SELECTION - ${field.key}:`, {
+          fieldType: field.type,
+          widget: field.widget,
+          componentKey,
+          hasComponent: !!Component,
+          componentName: Component?.name || 'Unknown',
+          OVERRIDE_APPLIED: field.type === 'multiselect'
+        });
+      }
       
       if (!Component) {
         // Fallback to field type if widget not found
         Component = fieldRegistry.value[field.type];
+        if (field.key === "skills" || field.key === "interests") {
+          console.log(`⚠️ COMPONENT FALLBACK - ${field.key}: ${field.type} -> ${!!Component}`);
+        }
       }
       
       if (!Component) {
