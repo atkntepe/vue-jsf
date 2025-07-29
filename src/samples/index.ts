@@ -3,6 +3,10 @@ import simplePersonSchema from './simple-person.json';
 import complexObjectSchema from './complex-object.json';
 import withRefsSchema from './with-refs.json';
 import formFieldsSchema from './form-fields.json';
+import conditionalValidationSchema from './conditional-validation.json';
+import dependentValidationSchema from './dependent-validation.json';
+import schemaCompositionSchema from './schema-composition.json';
+import advancedPatternsSchema from './advanced-patterns.json';
 
 export interface SampleSchema {
   name: string;
@@ -30,6 +34,26 @@ export const sampleSchemas: SampleSchema[] = [
     name: "Form Fields",
     description: "Various input types",
     schema: formFieldsSchema
+  },
+  {
+    name: "Conditional Validation",
+    description: "if/then/else conditions",
+    schema: conditionalValidationSchema
+  },
+  {
+    name: "Dependent Validation",
+    description: "dependentRequired/dependentSchemas",
+    schema: dependentValidationSchema
+  },
+  {
+    name: "Schema Composition",
+    description: "oneOf/anyOf examples",
+    schema: schemaCompositionSchema
+  },
+  {
+    name: "Advanced Patterns",
+    description: "Mixed enums, regex patterns",
+    schema: advancedPatternsSchema
   }
 ];
 
@@ -37,5 +61,9 @@ export {
   simplePersonSchema,
   complexObjectSchema,
   withRefsSchema,
-  formFieldsSchema
+  formFieldsSchema,
+  conditionalValidationSchema,
+  dependentValidationSchema,
+  schemaCompositionSchema,
+  advancedPatternsSchema
 };

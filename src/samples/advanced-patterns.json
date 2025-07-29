@@ -1,0 +1,48 @@
+{
+  "type": "object",
+  "title": "Advanced Patterns & Enums",
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}\\d{4}$",
+      "title": "Product ID",
+      "description": "Must be 2 uppercase letters followed by 4 digits (e.g., AB1234)"
+    },
+    "priority": {
+      "enum": [1, 2, 3, "urgent", "normal", "low", null],
+      "title": "Priority Level",
+      "description": "Can be a number (1-3), text, or null"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+$"
+      },
+      "title": "Tags",
+      "description": "Array of lowercase strings only"
+    },
+    "metadata": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "created": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "author": {
+              "type": "string"
+            }
+          }
+        }
+      ],
+      "title": "Metadata",
+      "description": "Can be either a string or an object with created/author"
+    }
+  },
+  "required": ["product_id", "priority"]
+}

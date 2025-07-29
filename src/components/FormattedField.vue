@@ -27,8 +27,10 @@
             hasIcon ? 'pl-10' : '',
             hasAction ? 'pr-10' : '',
           ]"
-          :placeholder="placeholder"
+          :placeholder="maskPlaceholder"
           :autocomplete="autocompleteValue"
+          @input="handleMaskedInput"
+          @keydown="handleMaskKeydown"
         />
 
         <div
@@ -139,6 +141,138 @@ const placeholder = computed(
 );
 const autocompleteValue = computed(() => formatConfig.value.autocomplete);
 
+// Input mask functionality
+const hasMask = computed(() => !!(props.field && props.field.mask));
+const maskPlaceholder = computed(() => {
+  if (hasMask.value && props.field?.mask) {
+    return props.field.mask;
+  }
+  return placeholder.value;
+});
+
+// Apply input mask to value
+function applyMask(value: string, mask: string): string {
+  if (!mask || !value) return value;
+  
+  let result = '';
+  let valueIndex = 0;
+  
+  for (let i = 0; i < mask.length && valueIndex < value.length; i++) {
+    const maskChar = mask[i];
+    const valueChar = value[valueIndex];
+    
+    if (maskChar === '9') {
+      // Digit
+      if (/\d/.test(valueChar)) {
+        result += valueChar;
+        valueIndex++;
+      } else {
+        // Skip non-digit characters in input
+        while (valueIndex < value.length && !/\d/.test(value[valueIndex])) {
+          valueIndex++;
+        }
+        if (valueIndex < value.length) {
+          result += value[valueIndex];
+          valueIndex++;
+        }
+      }
+    } else if (maskChar === 'A') {
+      // Uppercase letter
+      if (/[A-Za-z]/.test(valueChar)) {
+        result += valueChar.toUpperCase();
+        valueIndex++;
+      } else {
+        // Skip non-letter characters
+        while (valueIndex < value.length && !/[A-Za-z]/.test(value[valueIndex])) {
+          valueIndex++;
+        }
+        if (valueIndex < value.length) {
+          result += value[valueIndex].toUpperCase();
+          valueIndex++;
+        }
+      }
+    } else if (maskChar === 'a') {
+      // Lowercase letter
+      if (/[A-Za-z]/.test(valueChar)) {
+        result += valueChar.toLowerCase();
+        valueIndex++;
+      } else {
+        // Skip non-letter characters
+        while (valueIndex < value.length && !/[A-Za-z]/.test(value[valueIndex])) {
+          valueIndex++;
+        }
+        if (valueIndex < value.length) {
+          result += value[valueIndex].toLowerCase();
+          valueIndex++;
+        }
+      }
+    } else {
+      // Literal character
+      result += maskChar;
+      if (valueChar === maskChar) {
+        valueIndex++;
+      }
+    }
+  }
+  
+  return result;
+}
+
+// Handle masked input
+function handleMaskedInput(event: Event) {
+  if (!hasMask.value || !props.field?.mask) return;
+  
+  const target = event.target as HTMLInputElement;
+  const mask = props.field.mask;
+  const maskedValue = applyMask(target.value, mask);
+  
+  // Update the input value and cursor position
+  target.value = maskedValue;
+  localValue.value = maskedValue;
+}
+
+// Handle keydown for mask
+function handleMaskKeydown(event: KeyboardEvent) {
+  if (!hasMask.value || !props.field?.mask) return;
+  
+  const target = event.target as HTMLInputElement;
+  const mask = props.field.mask;
+  const key = event.key;
+  
+  // Allow backspace, delete, arrow keys, etc.
+  if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter'].includes(key)) {
+    return;
+  }
+  
+  // Get current cursor position
+  const cursorPos = target.selectionStart || 0;
+  
+  // Find the next input position in the mask
+  let nextPos = cursorPos;
+  while (nextPos < mask.length) {
+    const maskChar = mask[nextPos];
+    if (maskChar === '9' || maskChar === 'A' || maskChar === 'a') {
+      break;
+    }
+    nextPos++;
+  }
+  
+  // If we're at the end or no valid position found, prevent input
+  if (nextPos >= mask.length) {
+    event.preventDefault();
+    return;
+  }
+  
+  const maskChar = mask[nextPos];
+  
+  // Validate the input character against the mask
+  if (maskChar === '9' && !/\d/.test(key)) {
+    event.preventDefault();
+  } else if ((maskChar === 'A' || maskChar === 'a') && !/[A-Za-z]/.test(key)) {
+    event.preventDefault();
+  }
+}
+
 const isValid = computed(() => {
   if (!localValue.value) return null;
   const validation = formatConfig.value.validation;
@@ -185,7 +319,31 @@ const actionComponent = computed(() => {
   return actionName ? createIcon(actionName) : null;
 });
 
-const formatHelper = computed(() => formatConfig.value.helper);
+const formatHelper = computed(() => {
+  // Show mask helper if field has a mask
+  if (hasMask.value && props.field?.pattern && props.field?.mask) {
+    return {
+      text: `Pattern: ${props.field.mask} (${getPatternDescription(props.field.pattern)})`,
+      class: "text-slate-600 dark:text-slate-400",
+      action: undefined
+    };
+  }
+  
+  return formatConfig.value.helper;
+});
+
+// Get pattern description for mask helper
+function getPatternDescription(pattern: string): string {
+  const commonPatterns: Record<string, string> = {
+    '^[0-9]{5}(?:-[0-9]{4})?$': 'US ZIP code',
+    '^[A-Z][0-9][A-Z] [0-9][A-Z][0-9]$': 'Canadian postal code',
+    '^[A-Z]{2}\\d{4}$': 'Product ID format',
+    '^[a-z]+$': 'lowercase letters only',
+    '^[+]?[1-9]\\d{1,14}$': 'phone number',
+  };
+  
+  return commonPatterns[pattern] || 'custom format';
+}
 
 function getEmailHelper() {
   if (!localValue.value || isValid.value) return null;

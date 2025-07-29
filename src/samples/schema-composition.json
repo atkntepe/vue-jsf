@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "title": "Schema Composition Example",
+  "properties": {
+    "contact_method": {
+      "type": "string",
+      "enum": ["email", "phone", "mail"],
+      "title": "Preferred Contact Method"
+    },
+    "contact_info": {
+      "oneOf": [
+        {
+          "title": "Email Contact",
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "title": "Email Address"
+            }
+          },
+          "required": ["email"]
+        },
+        {
+          "title": "Phone Contact", 
+          "type": "object",
+          "properties": {
+            "phone": {
+              "type": "string",
+              "pattern": "^[+]?[1-9]\\d{1,14}$",
+              "title": "Phone Number"
+            }
+          },
+          "required": ["phone"]
+        },
+        {
+          "title": "Mail Contact",
+          "type": "object", 
+          "properties": {
+            "address": {
+              "type": "string",
+              "title": "Mailing Address"
+            },
+            "city": {
+              "type": "string",
+              "title": "City"
+            },
+            "postal_code": {
+              "type": "string",
+              "title": "Postal Code"
+            }
+          },
+          "required": ["address", "city", "postal_code"]
+        }
+      ]
+    }
+  },
+  "required": ["contact_method", "contact_info"]
+}

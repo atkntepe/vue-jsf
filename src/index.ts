@@ -75,8 +75,14 @@ export const SchemaForm = defineComponent({
   },
   emits: ["update:modelValue", "submit"],
   setup(props, { emit, slots }) {
-    const { fields } = useSchemaParser(props.schema);
     const formData = ref(props.modelValue);
+    
+    // Create reactive fields that update based on form data
+    const fields = computed(() => {
+      const parser = useSchemaParser(props.schema);
+      // Re-parse with current form data to apply conditional logic
+      return parser.parseFieldsWithData(formData.value);
+    });
 
     const fieldRegistry = ref<FieldRegistry>(defaultRegistry);
     if (typeof props.registry === "string") {
@@ -156,7 +162,7 @@ export const SchemaForm = defineComponent({
       );
     };
 
-    const renderField = (field: any) => {
+    const renderField = (field: any): any => {
       const fieldSlotName = `field-${field.type}`;
       if (slots[fieldSlotName]) {
         const slotProps = {
@@ -195,6 +201,90 @@ export const SchemaForm = defineComponent({
             field.children.map((child: any) => renderField(child)),
           ],
         );
+      }
+
+      // Handle schema composition (oneOf/anyOf) or composition type
+      if (field.type === "composition" || field.oneOf || field.anyOf) {
+        const options = field.oneOf || field.anyOf;
+        const currentValue = getNestedValue(formData.value, field.path, null);
+        const selectedOption = currentValue?._schemaOption !== undefined ? currentValue._schemaOption : -1;
+        
+        // Convert schema options to simple field arrays without using the parser
+        const parsedOptions = options.map((option: any) => {
+          if (Array.isArray(option)) {
+            return option; // Already parsed
+          } else if (option.properties) {
+            // Convert properties to simple field objects
+            return Object.entries(option.properties).map(([key, prop]: [string, any]) => ({
+              key,
+              path: `${field.path}.${key}`,
+              type: prop.enum ? "select" : prop.type === "string" ? "textfield" : prop.type === "number" ? "numberfield" : "textfield",
+              format: prop.format,
+              label: prop.title || key.charAt(0).toUpperCase() + key.slice(1),
+              description: prop.description || "",
+              required: (option.required || []).includes(key),
+              enum: prop.enum || null,
+              default: prop.default,
+              rules: [],
+              pattern: prop.pattern
+            }));
+          }
+          return [];
+        });
+        
+        // Create a temporary field for the select component
+        const selectField = {
+          ...field,
+          type: "select",
+          enum: [
+            { value: -1, label: "Select type..." },
+            ...options.map((option: any, index: number) => ({
+              value: index,
+              label: option.title || `Option ${index + 1}`
+            }))
+          ],
+          path: `${field.path}._schemaOption`
+        };
+
+        return h("div", { class: "mb-4" }, [
+          // Render the select directly using the component
+          h(
+            fieldRegistry.value.select || SelectField,
+            {
+              field: selectField,
+              modelValue: getNestedValue(formData.value, selectField.path, -1),
+              'onUpdate:modelValue': (val: any) => updateField(selectField.path, val),
+              errors: v$.value[selectField.path]?.$errors || []
+            }
+          ),
+          // Render fields for selected option only
+          selectedOption >= 0 && selectedOption < parsedOptions.length && 
+          h("div", { class: "border border-slate-200 dark:border-slate-800 rounded-md p-4 bg-slate-50/50 dark:bg-slate-900/50 mt-3" }, [
+            ...parsedOptions[selectedOption].map((optionField: any) => {
+              // Create a new field with the correct path prefix
+              const adjustedField = {
+                ...optionField,
+                path: `${field.path}.${optionField.key}`
+              };
+              return renderField(adjustedField);
+            })
+          ])
+        ]);
+      }
+
+      // Handle readonly/const fields
+      if (field.type === "readonly") {
+        return h("div", { class: "mb-4" }, [
+          h("label", { class: "block text-sm font-medium mb-2" }, field.label),
+          h("input", {
+            type: "text",
+            value: field.default,
+            readonly: true,
+            class: "w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed",
+            title: "This value is constant and cannot be changed"
+          }),
+          field.description && h("p", { class: "text-xs text-gray-500 mt-1" }, field.description)
+        ]);
       }
 
       if (field.type === "arrayfield") {

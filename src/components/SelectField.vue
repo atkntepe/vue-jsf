@@ -73,7 +73,7 @@
             <div class="py-1">
               <div
                 v-for="(option, index) in field.enum"
-                :key="option"
+                :key="typeof option === 'object' ? option.value : option"
                 @click="selectOption(option)"
                 @mouseenter="highlightedIndex = index"
                 :class="[
@@ -84,16 +84,16 @@
                     'text-slate-900 dark:text-slate-50 hover:bg-slate-100 dark:hover:bg-slate-800':
                       highlightedIndex !== index,
                     'bg-blue-100 dark:bg-blue-900/30 text-blue-900 dark:text-blue-100 font-medium':
-                      localValue === option,
+                      (typeof option === 'object' ? option.value : option) === localValue,
                   },
                 ]"
                 role="option"
-                :aria-selected="localValue === option"
+                :aria-selected="(typeof option === 'object' ? option.value : option) === localValue"
               >
-                <span class="block truncate">{{ option }}</span>
+                <span class="block truncate">{{ typeof option === 'object' ? option.label : option }}</span>
 
                 <svg
-                  v-if="localValue === option"
+                  v-if="(typeof option === 'object' ? option.value : option) === localValue"
                   class="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-blue-600 dark:text-blue-400"
                   fill="none"
                   stroke="currentColor"
@@ -138,19 +138,35 @@ const localValue = computed({
 });
 
 const displayValue = computed(() => {
+  if (!localValue.value) return "";
+  
+  // Handle object enum format {value, label}
+  const option = props.field.enum?.find((opt: any) => 
+    typeof opt === 'object' ? opt.value === localValue.value : opt === localValue.value
+  );
+  
+  if (typeof option === 'object' && option.label) {
+    return option.label;
+  }
+  
   return localValue.value || "";
 });
 
 const toggleDropdown = () => {
   isOpen.value = !isOpen.value;
   if (isOpen.value) {
-    const currentIndex = props.field.enum?.indexOf(localValue.value) ?? -1;
+    // Find current option index, handling both string and object enum formats
+    const currentIndex = props.field.enum?.findIndex((opt: any) => 
+      typeof opt === 'object' ? opt.value === localValue.value : opt === localValue.value
+    ) ?? -1;
     highlightedIndex.value = currentIndex;
   }
 };
 
-const selectOption = (option: string) => {
-  localValue.value = option;
+const selectOption = (option: any) => {
+  // Handle object enum format {value, label}
+  const value = typeof option === 'object' ? option.value : option;
+  localValue.value = value;
   isOpen.value = false;
   highlightedIndex.value = -1;
 };

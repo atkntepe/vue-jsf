@@ -136,7 +136,7 @@
               <label class="text-sm font-medium text-slate-900 dark:text-slate-100">
                 Quick Examples
               </label>
-              <div class="grid grid-cols-2 gap-2">
+              <div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
                 <button
                   v-for="example in sampleSchemas"
                   :key="example.name"

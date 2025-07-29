@@ -1,0 +1,36 @@
+{
+  "type": "object",
+  "title": "Dependent Validation Example",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Full Name"
+    },
+    "credit_card": {
+      "type": "string",
+      "title": "Credit Card Number"
+    },
+    "billing_address": {
+      "type": "string",
+      "title": "Billing Address"
+    },
+    "shipping_address": {
+      "type": "string", 
+      "title": "Shipping Address"
+    }
+  },
+  "required": ["name"],
+  "dependentRequired": {
+    "credit_card": ["billing_address"]
+  },
+  "dependentSchemas": {
+    "credit_card": {
+      "properties": {
+        "billing_address": {
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    }
+  }
+}

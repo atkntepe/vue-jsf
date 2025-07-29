@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "title": "Conditional Validation Example",
+  "properties": {
+    "country": {
+      "type": "string",
+      "enum": ["United States", "Canada", "Other"],
+      "title": "Country"
+    },
+    "postal_code": {
+      "type": "string",
+      "title": "Postal Code"
+    }
+  },
+  "if": {
+    "properties": {
+      "country": {
+        "const": "United States"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "postal_code": {
+        "pattern": "^[0-9]{5}(?:-[0-9]{4})?$",
+        "title": "ZIP Code"
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "postal_code": {
+        "pattern": "^[A-Z][0-9][A-Z] [0-9][A-Z][0-9]$",
+        "title": "Postal Code"
+      }
+    }
+  },
+  "required": ["country", "postal_code"]
+}
