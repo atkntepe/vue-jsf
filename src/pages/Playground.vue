@@ -236,12 +236,14 @@ import { SchemaForm } from "../index.ts";
 import TextField from "../components/TextField.vue";
 import NumberField from "../components/NumberField.vue";
 import SelectField from "../components/SelectField.vue";
+import FileUpload from "../components/FileUpload.vue";
 import { sampleSchemas } from "../samples/index.js";
 
 const testRegistry = {
   textfield: markRaw(TextField),
   numberfield: markRaw(NumberField),
   select: markRaw(SelectField),
+  fileupload: markRaw(FileUpload),
 };
 
 const testSchema = {
@@ -294,6 +296,35 @@ const testSchema = {
         "Other",
       ],
       description: "Select your country",
+    },
+    avatar: {
+      type: "string",
+      format: "file",
+      title: "Profile Picture",
+      description: "Upload your profile picture",
+      accept: "image/*",
+      maxSize: 5242880
+    },
+    resume: {
+      type: "string",
+      format: "file",
+      title: "Resume/CV",
+      description: "Upload your resume",
+      accept: ".pdf,.doc,.docx",
+      maxSize: 10485760
+    },
+    portfolio: {
+      type: "array",
+      title: "Portfolio Files",
+      description: "Upload portfolio images or documents",
+      items: {
+        type: "string",
+        format: "file",
+        title: "Portfolio Item"
+      },
+      maxItems: 5,
+      accept: "image/*,.pdf",
+      maxSize: 10485760
     },
     skills: {
       type: "array",

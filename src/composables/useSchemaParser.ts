@@ -24,6 +24,9 @@ export interface Field {
   // Pattern and mask
   pattern?: string;
   mask?: string;
+  // File upload specific properties
+  maxSize?: number;
+  accept?: string;
   // Conditional validation
   conditional?: {
     if: any;
@@ -48,6 +51,8 @@ export function useSchemaParser(schema: any) {
   addFormats(ajv);
 
   ajv.addFormat("tel", /^[\+]?[1-9][\d]{0,15}$/);
+  ajv.addFormat("file", true); // Accept any value for file format
+  ajv.addFormat("binary", true); // Accept any value for binary format
 
   let validator: ((data: any) => boolean) | null = null;
   try {
@@ -247,6 +252,9 @@ export function useSchemaParser(schema: any) {
           return "uuidfield";
         case "color":
           return "colorfield";
+        case "binary":
+        case "file":
+          return "fileupload";
         default:
           return "textfield";
       }
@@ -339,6 +347,8 @@ export function useSchemaParser(schema: any) {
           maxItems: field.maxItems,
           pattern: field.pattern,
           mask: field.pattern ? getInputMask(field.pattern) || undefined : undefined,
+          maxSize: field.maxSize,
+          accept: field.accept,
           children:
             field.type === "object" ? parseFields(field, fullPath, formData) : undefined,
           items:
@@ -370,6 +380,8 @@ export function useSchemaParser(schema: any) {
                       maximum: field.items.maximum,
                       pattern: field.items.pattern,
                       mask: field.items.pattern ? getInputMask(field.items.pattern) || undefined : undefined,
+                      maxSize: field.items.maxSize,
+                      accept: field.items.accept,
                     },
                   ]
               : undefined,

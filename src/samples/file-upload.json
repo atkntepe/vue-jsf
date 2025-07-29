@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Your Name",
+      "description": "Enter your full name",
+      "minLength": 2
+    },
+    "avatar": {
+      "type": "string",
+      "format": "file",
+      "title": "Profile Picture",
+      "description": "Upload your profile picture",
+      "accept": "image/*",
+      "maxSize": 5242880
+    },
+    "resume": {
+      "type": "string",
+      "format": "file",
+      "title": "Resume/CV",
+      "description": "Upload your resume",
+      "accept": ".pdf,.doc,.docx",
+      "maxSize": 10485760
+    },
+    "portfolio": {
+      "type": "array",
+      "title": "Portfolio Files",
+      "description": "Upload multiple files",
+      "items": {
+        "type": "string",
+        "format": "file",
+        "title": "Portfolio Item"
+      },
+      "maxItems": 3,
+      "accept": "image/*,.pdf",
+      "maxSize": 10485760
+    },
+    "documents": {
+      "type": "array",
+      "title": "Supporting Documents",
+      "description": "Upload any additional documents",
+      "items": {
+        "type": "string",
+        "format": "file",
+        "title": "Document",
+        "accept": "*/*"
+      },
+      "maxItems": 5,
+      "maxSize": 20971520
+    }
+  },
+  "required": ["name", "resume"]
+}
