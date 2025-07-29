@@ -1,0 +1,157 @@
+{
+  "type": "object",
+  "title": "Form State Management Demo",
+  "description": "Test form state tracking with validation",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "title": "First Name",
+      "minLength": 2,
+      "maxLength": 30,
+      "description": "Enter your first name (2-30 characters)"
+    },
+    "lastName": {
+      "type": "string", 
+      "title": "Last Name",
+      "minLength": 2,
+      "maxLength": 30,
+      "description": "Enter your last name (2-30 characters)"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "Email Address",
+      "description": "Enter a valid email address"
+    },
+    "age": {
+      "type": "integer",
+      "title": "Age",
+      "minimum": 16,
+      "maximum": 100,
+      "description": "Age must be between 16 and 100"
+    },
+    "phone": {
+      "type": "string",
+      "format": "tel",
+      "title": "Phone Number",
+      "description": "Enter your phone number",
+      "pattern": "^[\\+]?[1-9][\\d]{1,14}$"
+    },
+    "website": {
+      "type": "string",
+      "format": "url",
+      "title": "Personal Website",
+      "description": "Enter your website URL (optional)"
+    },
+    "password": {
+      "type": "string",
+      "format": "password",
+      "title": "Password",
+      "minLength": 8,
+      "maxLength": 50,
+      "description": "Password must be 8-50 characters"
+    },
+    "confirmPassword": {
+      "type": "string",
+      "format": "password", 
+      "title": "Confirm Password",
+      "minLength": 8,
+      "maxLength": 50,
+      "description": "Re-enter your password"
+    },
+    "country": {
+      "type": "string",
+      "title": "Country",
+      "enum": [
+        "United States",
+        "Canada", 
+        "United Kingdom",
+        "Germany",
+        "France",
+        "Australia",
+        "Japan",
+        "Other"
+      ],
+      "description": "Select your country"
+    },
+    "skills": {
+      "type": "array",
+      "title": "Technical Skills",
+      "description": "Select 1-5 technical skills",
+      "items": {
+        "type": "string",
+        "enum": [
+          "JavaScript",
+          "TypeScript", 
+          "Vue.js",
+          "React",
+          "Angular",
+          "Node.js",
+          "Python",
+          "Java",
+          "C#",
+          "PHP"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true
+    },
+    "experience": {
+      "type": "string",
+      "title": "Experience Level",
+      "enum": ["beginner", "intermediate", "advanced", "expert"],
+      "description": "Select your experience level"
+    },
+    "newsletter": {
+      "type": "boolean",
+      "title": "Subscribe to Newsletter",
+      "description": "Receive our weekly newsletter",
+      "default": false
+    },
+    "terms": {
+      "type": "boolean",
+      "title": "I agree to the Terms of Service",
+      "description": "You must agree to continue",
+      "const": true
+    },
+    "bio": {
+      "type": "string",
+      "title": "Bio",
+      "description": "Tell us about yourself (max 500 characters)",
+      "maxLength": 500
+    },
+    "avatar": {
+      "type": "string",
+      "format": "binary",
+      "title": "Profile Picture",
+      "description": "Upload your profile picture",
+      "accept": "image/*",
+      "maxSize": 2097152
+    },
+    "documents": {
+      "type": "array",
+      "title": "Documents",
+      "description": "Upload up to 3 documents",
+      "items": {
+        "type": "string",
+        "format": "binary"
+      },
+      "maxItems": 3,
+      "accept": ".pdf,.doc,.docx",
+      "maxSize": 5242880
+    }
+  },
+  "required": [
+    "firstName",
+    "lastName", 
+    "email",
+    "age",
+    "password",
+    "confirmPassword",
+    "country",
+    "skills",
+    "experience",
+    "terms"
+  ]
+}

@@ -8,6 +8,7 @@ import dependentValidationSchema from './dependent-validation.json';
 import schemaCompositionSchema from './schema-composition.json';
 import advancedPatternsSchema from './advanced-patterns.json';
 import fileUploadSchema from './file-upload.json';
+import formStateSchema from './form-state.json';
 
 export interface SampleSchema {
   name: string;
@@ -60,6 +61,52 @@ export const sampleSchemas: SampleSchema[] = [
     name: "File Upload",
     description: "File upload fields with validation",
     schema: fileUploadSchema
+  },
+  {
+    name: "Form State Management", 
+    description: "Test form state tracking and management",
+    schema: {
+      ...formStateSchema,
+      uiSchema: {
+        "bio": {
+          "ui:widget": "textarea",
+          "ui:placeholder": "Tell us about yourself..."
+        },
+        "password": {
+          "ui:help": "Password must be at least 8 characters"
+        },
+        "confirmPassword": {
+          "ui:help": "Must match your password"
+        },
+        "skills": {
+          "ui:help": "Select 1-5 skills that represent your expertise"
+        },
+        "terms": {
+          "ui:help": "Required to proceed with registration"
+        },
+        "newsletter": {
+          "ui:help": "We respect your privacy"
+        },
+        "ui:order": [
+          "firstName",
+          "lastName", 
+          "email",
+          "age",
+          "phone",
+          "website",
+          "password",
+          "confirmPassword",
+          "country",
+          "skills", 
+          "experience",
+          "newsletter",
+          "terms",
+          "bio",
+          "avatar",
+          "documents"
+        ]
+      }
+    }
   }
 ];
 
@@ -72,5 +119,6 @@ export {
   dependentValidationSchema,
   schemaCompositionSchema,
   advancedPatternsSchema,
-  fileUploadSchema
+  fileUploadSchema,
+  formStateSchema
 };

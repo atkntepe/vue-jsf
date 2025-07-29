@@ -6,6 +6,7 @@ import {
   resolveComponent,
   computed,
   provide,
+  watch,
 } from "vue";
 import { useSchemaParser } from "./composables/useSchemaParser";
 import { useUISchemaParser } from "./composables/useUISchemaParser";
@@ -22,6 +23,7 @@ import FileUpload from "./components/FileUpload.vue";
 import MultiSelect from "./components/MultiSelect.vue";
 import { useVuelidate } from "@vuelidate/core"; // New core import
 import { required, minLength, minValue, maxValue } from "@vuelidate/validators";
+import { useFormState } from "./composables/useFormState";
 
 type FieldRegistry = Record<string, any>;
 
@@ -80,9 +82,12 @@ export const SchemaForm = defineComponent({
     modelValue: { type: Object, default: () => ({}) },
     registry: { type: [Object, String], default: "default" },
   },
-  emits: ["update:modelValue", "submit"],
+  emits: ["update:modelValue", "submit", "form-state-change"],
   setup(props, { emit, slots }) {
     const formData = ref(props.modelValue);
+    
+    // Initialize form state management
+    const formStateManager = useFormState(props.modelValue);
     
     // Create reactive fields that update based on form data
     const fields = computed(() => {
@@ -170,7 +175,17 @@ export const SchemaForm = defineComponent({
       } else {
         current[lastKey] = value;
       }
+      
+      // Update form state management
+      try {
+        const fieldErrors = v$.value[path]?.$errors || [];
+        formStateManager.updateField(path, value, fieldErrors);
+      } catch (error) {
+        console.warn('Form state update error:', error);
+      }
+      
       emit("update:modelValue", formData.value);
+      emit("form-state-change", formStateManager.formState.value);
     };
 
     const getNestedValue = (data: any, path: string, defaultValue: any) => {
@@ -179,6 +194,51 @@ export const SchemaForm = defineComponent({
       );
     };
 
+    const touchField = (path: string) => {
+      try {
+        formStateManager.touchField(path);
+        emit("form-state-change", formStateManager.formState.value);
+      } catch (error) {
+        console.warn('Touch field error:', error);
+      }
+    };
+
+    const resetForm = (newInitialData?: any) => {
+      const resetData = newInitialData ?? props.modelValue;
+      formData.value = JSON.parse(JSON.stringify(resetData));
+      formStateManager.resetForm(resetData);
+      emit("update:modelValue", formData.value);
+      emit("form-state-change", formStateManager.formState.value);
+    };
+
+    const resetField = (path: string) => {
+      formStateManager.resetField(path);
+      const resetValue = formStateManager.getFieldState(path)?.initialValue;
+      if (resetValue !== undefined) {
+        updateField(path, resetValue);
+      }
+    };
+
+
+    // Watch for field changes to initialize new fields
+    watch(fields, (newFields) => {
+      if (newFields && Array.isArray(newFields)) {
+        newFields.forEach(field => {
+          if (field && field.path && !formStateManager.getFieldState(field.path)) {
+            const currentValue = getNestedValue(formData.value, field.path, field.default);
+            formStateManager.initializeField(field.path, currentValue);
+          }
+        });
+      }
+    }, { immediate: true });
+
+    // Watch for prop changes to reset form state
+    watch(() => props.modelValue, (newValue) => {
+      formData.value = newValue;
+      formStateManager.resetForm(newValue);
+      emit("form-state-change", formStateManager.formState.value);
+    }, { deep: true });
+
     const renderField = (field: any): any => {
       const fieldSlotName = `field-${field.type}`;
       if (slots[fieldSlotName]) {
@@ -186,7 +246,9 @@ export const SchemaForm = defineComponent({
           field,
           value: getNestedValue(formData.value, field.path, field.default),
           update: (val: any) => updateField(field.path, val),
+          touch: () => touchField(field.path),
           errors: v$.value[field.path]?.$errors || [],
+          fieldState: formStateManager.getFieldState(field.path),
         };
 
         if (field.type === "arrayfield") {
@@ -342,7 +404,9 @@ export const SchemaForm = defineComponent({
           field,
           modelValue: Array.isArray(arrayValue) ? arrayValue : [],
           "onUpdate:modelValue": (val: any) => updateField(field.path, val),
+          onFocus: () => touchField(field.path),
           errors: v$.value[field.path]?.$errors || [],
+          fieldState: formStateManager.getFieldState(field.path),
         });
       }
 
@@ -350,7 +414,9 @@ export const SchemaForm = defineComponent({
         field,
         modelValue: getNestedValue(formData.value, field.path, field.default),
         "onUpdate:modelValue": (val: any) => updateField(field.path, val),
+        onFocus: () => touchField(field.path),
         errors: v$.value[field.path]?.$errors || [],
+        fieldState: formStateManager.getFieldState(field.path),
         ...(field.type === "numberfield" && Component === "VTextField"
           ? { type: "number" }
           : {}),
@@ -373,6 +439,15 @@ export const SchemaForm = defineComponent({
           formData: formData.value,
           v$: v$.value,
           submit: submitFn,
+          formState: formStateManager.formState.value,
+          resetForm,
+          resetField,
+          touchField,
+          getFieldState: formStateManager.getFieldState,
+          isFieldDirty: formStateManager.isFieldDirty,
+          isFieldTouched: formStateManager.isFieldTouched,
+          getDirtyFields: formStateManager.getDirtyFields,
+          getChangedValues: formStateManager.getChangedValues,
         });
       }
 
@@ -383,3 +458,4 @@ export const SchemaForm = defineComponent({
 
 export default SchemaForm;
 export { useSchemaParser };
+export { useFormState, type FormState, type FieldState } from "./composables/useFormState";

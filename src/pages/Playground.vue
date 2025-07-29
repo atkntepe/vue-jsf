@@ -112,11 +112,77 @@
               <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">Generated Form</h3>
               <p class="text-xs text-slate-600 dark:text-slate-400">Interactive form based on your schema</p>
             </div>
+            <!-- Form State Dashboard (when using form state example) -->
+            <div v-if="isFormStateExample && currentFormState" class="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+              <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Form State Dashboard
+              </h4>
+              
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div class="text-center">
+                  <div :class="currentFormState.isDirty ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold mb-1">
+                    {{ currentFormState.isDirty ? '●' : '○' }}
+                  </div>
+                  <div class="text-xs font-medium text-gray-900 dark:text-gray-100">Dirty</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">{{ currentFormState.isDirty ? 'Yes' : 'No' }}</div>
+                </div>
+                
+                <div class="text-center">
+                  <div :class="currentFormState.isPristine ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold mb-1">
+                    {{ currentFormState.isPristine ? '●' : '○' }}
+                  </div>
+                  <div class="text-xs font-medium text-gray-900 dark:text-gray-100">Pristine</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">{{ currentFormState.isPristine ? 'Yes' : 'No' }}</div>
+                </div>
+                
+                <div class="text-center">
+                  <div :class="currentFormState.isTouched ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold mb-1">
+                    {{ currentFormState.isTouched ? '●' : '○' }}
+                  </div>
+                  <div class="text-xs font-medium text-gray-900 dark:text-gray-100">Touched</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">{{ currentFormState.isTouched ? 'Yes' : 'No' }}</div>
+                </div>
+                
+                <div class="text-center">
+                  <div :class="currentFormState.isValid ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200'" class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-semibold mb-1">
+                    {{ currentFormState.isValid ? '✓' : '✗' }}
+                  </div>
+                  <div class="text-xs font-medium text-gray-900 dark:text-gray-100">Valid</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">{{ currentFormState.isValid ? 'Yes' : 'No' }}</div>
+                </div>
+              </div>
+              
+              <div class="flex gap-2">
+                <button
+                  @click="resetFormData"
+                  class="px-3 py-1.5 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors"
+                >
+                  Reset Form
+                </button>
+                <button
+                  @click="logFormState"
+                  class="px-3 py-1.5 text-xs bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors"
+                >
+                  Log Form State
+                </button>
+                <button
+                  @click="addValidationErrors"
+                  class="px-3 py-1.5 text-xs bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors"
+                >
+                  Test Validation
+                </button>
+              </div>
+            </div>
+
             <SchemaForm
               :schema="currentSchema"
               v-model="formData"
               :registry="testRegistry"
               :key="schemaKey"
+              @form-state-change="onFormStateChange"
             />
           </div>
 
@@ -145,7 +211,7 @@
             <div class="flex items-center gap-2">
               <div class="h-2 w-2 rounded-full bg-emerald-500"></div>
               <h2 class="text-lg font-medium text-slate-900 dark:text-slate-100">
-                JSON Output
+                {{ isFormStateExample ? 'Form Data & State' : 'JSON Output' }}
               </h2>
             </div>
             <button
@@ -160,7 +226,7 @@
             </button>
           </div>
           <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Live preview of form data
+            {{ isFormStateExample ? 'Live preview of form data and state management' : 'Live preview of form data' }}
           </p>
         </div>
 
@@ -187,6 +253,22 @@
                   {{ Object.keys(formData).length ? "Active" : "Waiting" }}
                 </span>
               </span>
+            </div>
+          </div>
+
+          <!-- Form State Information (only for form state example) -->
+          <div v-if="isFormStateExample && currentFormState" class="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden mb-4">
+            <div class="border-b border-slate-200 dark:border-slate-800 px-4 py-2 bg-blue-50 dark:bg-blue-900/20">
+              <div class="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                formState.json
+              </div>
+            </div>
+
+            <div class="p-4 bg-blue-50/50 dark:bg-blue-900/10">
+              <pre class="text-sm text-slate-900 dark:text-slate-100 font-mono leading-relaxed whitespace-pre-wrap overflow-x-auto"><code>{{ JSON.stringify(currentFormState, null, 2) }}</code></pre>
             </div>
           </div>
 
@@ -389,9 +471,48 @@ const schemaValid = ref(false);
 const schemaError = ref('');
 const schemaKey = ref(0); // Force re-render when schema changes
 
+// Form state management
+const currentFormState = ref<any>(null);
+const currentExampleName = ref('');
+
 const formattedJson = computed(() => {
   return JSON.stringify(formData.value, null, 2);
 });
+
+// Check if current example is form state management
+const isFormStateExample = computed(() => {
+  return currentExampleName.value === 'Form State Management';
+});
+
+// Handle form state changes
+const onFormStateChange = (formState: any) => {
+  currentFormState.value = formState;
+  console.log('Form state changed:', formState); // Debug logging
+};
+
+
+// Helper functions for form state dashboard
+const resetFormData = () => {
+  formData.value = {};
+  schemaKey.value++; // Force re-render
+};
+
+const logFormState = () => {
+  console.log('Current Form State:', currentFormState.value);
+  console.log('Current Form Data:', formData.value);
+};
+
+const addValidationErrors = () => {
+  // Set some invalid data to trigger validation
+  formData.value = {
+    firstName: 'A', // Too short
+    email: 'invalid-email', // Invalid format
+    age: 150, // Too high
+    password: '123', // Too short
+    confirmPassword: '456', // Doesn't match
+    terms: false // Required to be true
+  };
+};
 
 // Parse schema with error handling and persistence
 const parseSchema = () => {
@@ -438,7 +559,13 @@ const parseSchema = () => {
 
 // Load example schema
 const loadExample = (example: any) => {
+  currentExampleName.value = example.name;
   schemaInput.value = JSON.stringify(example.schema, null, 2);
+  
+  // Reset form data when loading new example
+  formData.value = {};
+  currentFormState.value = null;
+  
   parseSchema();
 };
 
