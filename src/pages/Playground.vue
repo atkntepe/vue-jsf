@@ -320,6 +320,7 @@ import NumberField from "../components/NumberField.vue";
 import SelectField from "../components/SelectField.vue";
 import FileUpload from "../components/FileUpload.vue";
 import MultiSelect from "../components/MultiSelect.vue";
+import RichTextEditor from "../components/RichTextEditor.vue";
 import { sampleSchemas } from "../samples/index.js";
 
 const testRegistry = {
@@ -328,6 +329,7 @@ const testRegistry = {
   select: markRaw(SelectField),
   fileupload: markRaw(FileUpload),
   multiselect: markRaw(MultiSelect),
+  richtexteditor: markRaw(RichTextEditor),
 };
 
 const testSchema = {
@@ -487,7 +489,6 @@ const isFormStateExample = computed(() => {
 // Handle form state changes
 const onFormStateChange = (formState: any) => {
   currentFormState.value = formState;
-  console.log('Form state changed:', formState); // Debug logging
 };
 
 
@@ -498,8 +499,13 @@ const resetFormData = () => {
 };
 
 const logFormState = () => {
-  console.log('Current Form State:', currentFormState.value);
-  console.log('Current Form Data:', formData.value);
+  // Log form state for debugging - check browser console
+  if (currentFormState.value) {
+    console.log('Current Form State:', currentFormState.value);
+  }
+  if (formData.value) {
+    console.log('Current Form Data:', formData.value);
+  }
 };
 
 const addValidationErrors = () => {
@@ -586,7 +592,7 @@ const copyToClipboard = async () => {
   try {
     await navigator.clipboard.writeText(formattedJson.value);
   } catch (err) {
-    console.error("Failed to copy: ", err);
+    // Silently handle clipboard errors
   }
 };
 

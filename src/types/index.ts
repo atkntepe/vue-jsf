@@ -107,4 +107,8 @@ export interface FieldWithUI {
   readonly?: boolean;
   classNames?: string | string[];
   style?: Record<string, any>;
+  // Rich text editor specific properties
+  editorOptions?: any;
+  toolbar?: any;
+  toolbarStyle?: 'minimal' | 'basic' | 'full';
 }

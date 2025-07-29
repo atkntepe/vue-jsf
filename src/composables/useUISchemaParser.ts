@@ -94,17 +94,7 @@ export function useUISchemaParser() {
         const isMultiselect = (schema.type === 'array' && schema.items?.enum && !uiSchema?.['ui:widget']) || 
                              uiSchema?.['ui:widget'] === 'multiselect';
         
-        if ((schema.key === 'skills' || schema.key === 'interests') || (schema.path && (schema.path.includes('skills') || schema.path.includes('interests')))) {
-          console.log(`🧪 MULTISELECT WIDGET TEST - ${schema.key || schema.path}:`, {
-            type: schema.type,
-            hasItems: !!schema.items,
-            hasItemsEnum: !!schema.items?.enum,
-            hasEnum: !!schema.enum,
-            uiWidget: uiSchema?.['ui:widget'],
-            testResult: isMultiselect,
-            schema: schema
-          });
-        }
+        // Multiselect widget test logic
         
         return isMultiselect;
       }
@@ -116,15 +106,7 @@ export function useUISchemaParser() {
         const isSelect = (schema.enum && schema.type !== 'array' && !uiSchema?.['ui:widget']) || 
                         uiSchema?.['ui:widget'] === 'select';
         
-        if ((schema.key === 'skills' || schema.key === 'interests') || (schema.path && (schema.path.includes('skills') || schema.path.includes('interests')))) {
-          console.log(`📋 SELECT WIDGET TEST - ${schema.key || schema.path}:`, {
-            type: schema.type,
-            hasEnum: !!schema.enum,
-            uiWidget: uiSchema?.['ui:widget'],
-            testResult: isSelect,
-            schema: schema
-          });
-        }
+        // Select widget test logic
         
         return isSelect;
       }
@@ -140,6 +122,14 @@ export function useUISchemaParser() {
       component: 'ArrayField',
       test: (schema: any, uiSchema?: UISchema) => 
         schema.type === 'array' && !uiSchema?.['ui:widget']
+    },
+    {
+      name: 'richtext',
+      component: 'RichTextEditor',
+      test: (schema: any, uiSchema?: UISchema) => 
+        (schema.format === 'html' || schema.format === 'richtext') || 
+        uiSchema?.['ui:widget'] === 'richtext' ||
+        uiSchema?.['ui:widget'] === 'richtexteditor'
     },
     {
       name: 'hidden',

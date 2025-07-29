@@ -1,0 +1,138 @@
+{
+  "type": "object",
+  "title": "Rich Text Editor Demo",
+  "description": "Test rich text editing capabilities with different configurations",
+  "properties": {
+    "articleTitle": {
+      "type": "string",
+      "title": "Article Title",
+      "minLength": 5,
+      "maxLength": 100,
+      "description": "Enter a compelling title for your article"
+    },
+    "shortDescription": {
+      "type": "string",
+      "format": "html",
+      "title": "Short Description",
+      "toolbarStyle": "basic",
+      "maxLength": 300,
+      "description": "Brief description with basic formatting",
+      "placeholder": "Enter a short description with basic formatting..."
+    },
+    "blogPost": {
+      "type": "string",
+      "format": "richtext",
+      "title": "Blog Post Content",
+      "toolbarStyle": "full",
+      "maxLength": 5000,
+      "description": "Full blog post with complete rich text editing",
+      "placeholder": "Write your blog post here with full formatting options..."
+    },
+    "emailTemplate": {
+      "type": "string",
+      "format": "html",
+      "title": "Email Template",
+      "toolbarStyle": "full",
+      "maxLength": 2000,
+      "description": "HTML email template with rich formatting",
+      "placeholder": "Design your email template..."
+    },
+    "quickNote": {
+      "type": "string",
+      "format": "richtext",
+      "title": "Quick Note",
+      "toolbarStyle": "minimal",
+      "maxLength": 500,
+      "description": "Simple note with minimal formatting options",
+      "placeholder": "Jot down a quick note..."
+    },
+    "documentSection": {
+      "type": "string",
+      "format": "html",
+      "title": "Document Section", 
+      "toolbarStyle": "basic",
+      "description": "Document section with moderate formatting",
+      "placeholder": "Enter document content..."
+    },
+    "category": {
+      "type": "string",
+      "title": "Content Category",
+      "enum": [
+        "blog",
+        "news",
+        "tutorial",
+        "documentation",
+        "announcement",
+        "other"
+      ],
+      "description": "Select the content category"
+    },
+    "tags": {
+      "type": "array",
+      "title": "Content Tags",
+      "items": {
+        "type": "string",
+        "enum": [
+          "technology",
+          "programming",
+          "design",
+          "marketing",
+          "business",
+          "tutorial",
+          "guide",
+          "tips",
+          "news",
+          "review"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 5,
+      "uniqueItems": true,
+      "description": "Choose relevant tags for your content"
+    },
+    "publishDate": {
+      "type": "string",
+      "format": "date",
+      "title": "Publish Date",
+      "description": "When should this content be published?"
+    },
+    "isPublished": {
+      "type": "boolean",
+      "title": "Publish Now",
+      "description": "Check to publish immediately",
+      "default": false
+    },
+    "authorNotes": {
+      "type": "string",
+      "format": "richtext",
+      "title": "Author Notes",
+      "toolbarStyle": "basic",
+      "maxLength": 1000,
+      "description": "Internal notes for editors/reviewers",
+      "placeholder": "Add any notes for the editorial team..."
+    },
+    "metaDescription": {
+      "type": "string",
+      "title": "Meta Description",
+      "maxLength": 160,
+      "description": "SEO meta description (plain text, max 160 characters)",
+      "placeholder": "Write a compelling meta description for search engines..."
+    },
+    "featuredImage": {
+      "type": "string",
+      "format": "binary",
+      "title": "Featured Image",
+      "description": "Upload a featured image for this content",
+      "accept": "image/*",
+      "maxSize": 5242880
+    }
+  },
+  "required": [
+    "articleTitle",
+    "shortDescription", 
+    "blogPost",
+    "category",
+    "tags",
+    "isPublished"
+  ]
+}

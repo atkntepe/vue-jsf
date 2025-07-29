@@ -9,6 +9,7 @@ import schemaCompositionSchema from './schema-composition.json';
 import advancedPatternsSchema from './advanced-patterns.json';
 import fileUploadSchema from './file-upload.json';
 import formStateSchema from './form-state.json';
+import richTextEditorSchema from './rich-text-editor.json';
 
 export interface SampleSchema {
   name: string;
@@ -107,6 +108,11 @@ export const sampleSchemas: SampleSchema[] = [
         ]
       }
     }
+  },
+  {
+    name: "Rich Text Editor",
+    description: "Test rich text editing with different toolbar configurations",
+    schema: richTextEditorSchema
   }
 ];
 
@@ -120,5 +126,6 @@ export {
   schemaCompositionSchema,
   advancedPatternsSchema,
   fileUploadSchema,
-  formStateSchema
+  formStateSchema,
+  richTextEditorSchema
 };

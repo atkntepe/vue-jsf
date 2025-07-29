@@ -103,71 +103,89 @@
           </p>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-4">
+        <div class="grid md:grid-cols-3 gap-6">
           <!-- Feature 1 -->
-          <div class="bg-white dark:bg-slate-950 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
-            <div class="h-8 w-8 bg-blue-100 dark:bg-blue-900/30 rounded-md flex items-center justify-center mb-3">
-              <svg class="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-              </svg>
+          <div class="group relative bg-white dark:bg-slate-950 rounded-xl p-6 border border-slate-200/60 dark:border-slate-800/60 shadow-sm hover:shadow-md hover:shadow-blue-500/5 dark:hover:shadow-blue-500/10 transition-all duration-300 hover:border-blue-200 dark:hover:border-blue-800/60">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-transparent dark:from-blue-950/20 dark:via-transparent dark:to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative">
+              <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/25 dark:shadow-blue-500/20 mb-4 group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-all duration-300">
+                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors duration-200">Lightning Fast</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Built with Vue 3 Composition API and optimized for exceptional performance and minimal bundle size.</p>
             </div>
-            <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">Lightning Fast</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-400">Built with Vue 3 Composition API and optimized for performance.</p>
           </div>
 
           <!-- Feature 2 -->
-          <div class="bg-white dark:bg-slate-950 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
-            <div class="h-8 w-8 bg-purple-100 dark:bg-purple-900/30 rounded-md flex items-center justify-center mb-3">
-              <svg class="h-4 w-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
+          <div class="group relative bg-white dark:bg-slate-950 rounded-xl p-6 border border-slate-200/60 dark:border-slate-800/60 shadow-sm hover:shadow-md hover:shadow-purple-500/5 dark:hover:shadow-purple-500/10 transition-all duration-300 hover:border-purple-200 dark:hover:border-purple-800/60">
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-50/50 via-transparent to-transparent dark:from-purple-950/20 dark:via-transparent dark:to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative">
+              <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/25 dark:shadow-purple-500/20 mb-4 group-hover:shadow-xl group-hover:shadow-purple-500/30 transition-all duration-300">
+                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors duration-200">Full Validation</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Comprehensive validation using Vuelidate with JSON Schema rules and real-time error feedback.</p>
             </div>
-            <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">Full Validation</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-400">Comprehensive validation using Vuelidate with JSON Schema rules.</p>
           </div>
 
           <!-- Feature 3 -->
-          <div class="bg-white dark:bg-slate-950 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
-            <div class="h-8 w-8 bg-green-100 dark:bg-green-900/30 rounded-md flex items-center justify-center mb-3">
-              <svg class="h-4 w-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-              </svg>
+          <div class="group relative bg-white dark:bg-slate-950 rounded-xl p-6 border border-slate-200/60 dark:border-slate-800/60 shadow-sm hover:shadow-md hover:shadow-emerald-500/5 dark:hover:shadow-emerald-500/10 transition-all duration-300 hover:border-emerald-200 dark:hover:border-emerald-800/60">
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-transparent dark:from-emerald-950/20 dark:via-transparent dark:to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative">
+              <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25 dark:shadow-emerald-500/20 mb-4 group-hover:shadow-xl group-hover:shadow-emerald-500/30 transition-all duration-300">
+                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors duration-200">Beautiful Design</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Styled with Tailwind CSS and fully customizable components with modern design principles.</p>
             </div>
-            <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">Beautiful Design</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-400">Styled with Tailwind CSS and fully customizable components.</p>
           </div>
 
           <!-- Feature 4 -->
-          <div class="bg-white dark:bg-slate-950 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
-            <div class="h-8 w-8 bg-orange-100 dark:bg-orange-900/30 rounded-md flex items-center justify-center mb-3">
-              <svg class="h-4 w-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-              </svg>
+          <div class="group relative bg-white dark:bg-slate-950 rounded-xl p-6 border border-slate-200/60 dark:border-slate-800/60 shadow-sm hover:shadow-md hover:shadow-orange-500/5 dark:hover:shadow-orange-500/10 transition-all duration-300 hover:border-orange-200 dark:hover:border-orange-800/60">
+            <div class="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-transparent to-transparent dark:from-orange-950/20 dark:via-transparent dark:to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative">
+              <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/25 dark:shadow-orange-500/20 mb-4 group-hover:shadow-xl group-hover:shadow-orange-500/30 transition-all duration-300">
+                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors duration-200">TypeScript First</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Built with TypeScript for full type safety, IntelliSense, and exceptional developer experience.</p>
             </div>
-            <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">TypeScript First</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-400">Built with TypeScript for full type safety and IntelliSense.</p>
           </div>
 
           <!-- Feature 5 -->
-          <div class="bg-white dark:bg-slate-950 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
-            <div class="h-8 w-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-md flex items-center justify-center mb-3">
-              <svg class="h-4 w-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-              </svg>
+          <div class="group relative bg-white dark:bg-slate-950 rounded-xl p-6 border border-slate-200/60 dark:border-slate-800/60 shadow-sm hover:shadow-md hover:shadow-indigo-500/5 dark:hover:shadow-indigo-500/10 transition-all duration-300 hover:border-indigo-200 dark:hover:border-indigo-800/60">
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-transparent to-transparent dark:from-indigo-950/20 dark:via-transparent dark:to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative">
+              <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shadow-lg shadow-indigo-500/25 dark:shadow-indigo-500/20 mb-4 group-hover:shadow-xl group-hover:shadow-indigo-500/30 transition-all duration-300">
+                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors duration-200">Rich Field Types</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Support for arrays, objects, advanced formatted inputs, and custom field components.</p>
             </div>
-            <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">Rich Field Types</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-400">Support for arrays, objects, and advanced formatted inputs.</p>
           </div>
 
           <!-- Feature 6 -->
-          <div class="bg-white dark:bg-slate-950 rounded-lg p-4 border border-slate-200 dark:border-slate-800">
-            <div class="h-8 w-8 bg-pink-100 dark:bg-pink-900/30 rounded-md flex items-center justify-center mb-3">
-              <svg class="h-4 w-4 text-pink-600 dark:text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a1 1 0 01-1-1V9a1 1 0 011-1h1a2 2 0 100-4H4a1 1 0 01-1-1V4a1 1 0 011-1h3a1 1 0 001-1v-1a2 2 0 012-2z"></path>
-              </svg>
+          <div class="group relative bg-white dark:bg-slate-950 rounded-xl p-6 border border-slate-200/60 dark:border-slate-800/60 shadow-sm hover:shadow-md hover:shadow-pink-500/5 dark:hover:shadow-pink-500/10 transition-all duration-300 hover:border-pink-200 dark:hover:border-pink-800/60">
+            <div class="absolute inset-0 bg-gradient-to-br from-pink-50/50 via-transparent to-transparent dark:from-pink-950/20 dark:via-transparent dark:to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="relative">
+              <div class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 shadow-lg shadow-pink-500/25 dark:shadow-pink-500/20 mb-4 group-hover:shadow-xl group-hover:shadow-pink-500/30 transition-all duration-300">
+                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a1 1 0 01-1-1V9a1 1 0 011-1h1a2 2 0 100-4H4a1 1 0 01-1-1V4a1 1 0 011-1h3a1 1 0 001-1v-1a2 2 0 012-2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-base font-semibold text-slate-900 dark:text-slate-100 mb-2 group-hover:text-pink-700 dark:group-hover:text-pink-300 transition-colors duration-200">Extensible</h3>
+              <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Easy to extend with custom components, validators, and seamless third-party integrations.</p>
             </div>
-            <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-1">Extensible</h3>
-            <p class="text-xs text-slate-600 dark:text-slate-400">Easy to extend with custom components and integrations.</p>
           </div>
         </div>
       </div>

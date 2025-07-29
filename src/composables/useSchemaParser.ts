@@ -53,6 +53,8 @@ export function useSchemaParser(schema: any) {
   ajv.addFormat("tel", /^[\+]?[1-9][\d]{0,15}$/);
   ajv.addFormat("file", true); // Accept any value for file format
   ajv.addFormat("binary", true); // Accept any value for binary format
+  ajv.addFormat("html", true); // Accept any value for html format
+  ajv.addFormat("richtext", true); // Accept any value for richtext format
 
   let validator: ((data: any) => boolean) | null = null;
   try {
@@ -255,6 +257,9 @@ export function useSchemaParser(schema: any) {
         case "binary":
         case "file":
           return "fileupload";
+        case "html":
+        case "richtext":
+          return "richtexteditor";
         default:
           return "textfield";
       }
@@ -325,24 +330,8 @@ export function useSchemaParser(schema: any) {
         let fieldType;
         if (field.type === "array" && field.items?.enum) {
           fieldType = "multiselect";
-          if (key === "skills" || key === "interests") {
-            console.log(`🎯 MULTISELECT DETECTED - ${key}:`, { 
-              type: field.type, 
-              hasItems: !!field.items, 
-              hasEnum: !!field.items?.enum,
-              enumOptions: field.items.enum,
-              resultType: fieldType
-            });
-          }
         } else if (field.enum) {
           fieldType = "select";
-          if (key === "skills" || key === "interests") {
-            console.log(`📋 SELECT DETECTED - ${key}:`, { 
-              type: field.type, 
-              enum: field.enum,
-              resultType: fieldType
-            });
-          }
         } else if (field.const !== undefined) {
           fieldType = "readonly";
         } else if (field.pattern && getInputMask(field.pattern)) {

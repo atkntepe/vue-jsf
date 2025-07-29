@@ -346,7 +346,7 @@ const updateForm = () => {
     Object.keys(formData).forEach(key => delete (formData as any)[key]);
     formKey.value++;
   } catch (error) {
-    console.error('Invalid JSON:', error);
+    // Invalid JSON format
     currentSchema.value = null;
     currentUISchema.value = null;
   }
